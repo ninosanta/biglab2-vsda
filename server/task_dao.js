@@ -4,7 +4,7 @@
 const sqlite = require("sqlite3");
 const dayjs = require("dayjs");
 
-
+const db = new sqlite.Database('tasks.db', (err) => { if (err) throw err; });
 
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(localizedFormat); // use shortcuts 'LLL' for date and time format
@@ -31,28 +31,32 @@ function Task(id, description, isUrgent = false, isPrivate = true, deadline = ''
   }
 }
 
-exports.createTask = function (task) {
-  const db = new sqlite.Database('tasks.db', (err) => { if (err) throw err; });
+exports.getNewID = function () {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT MAX(id) AS result FROM tasks';
-    let id;
     db.all(sql, [], (err, rows) => {
       if (err) {
         reject(err);
       }
       else {
-        id = rows.forEach(record => {id = record.result + 1});
+        resolve(rows.map(record => record.result)[0]+1);
       }
     });
-    console.log("trovato id " + id);
-    sql = 'INSERT INTO tasks(id,description, important, private, completed, deadline) VALUES(?,?,?,?,?,?)';
-    db.run(sql, [id, task.description, task.urgent, task.private, task.deadline, task.completed], function (err) {
+  });
+}
+
+exports.createTask = function (task, id) {
+  console.log("id ricevuto ");
+  console.log(id);
+  console.log(task);
+  let sql;
+  return new Promise((resolve, reject) => {
+    sql = 'INSERT INTO tasks(id,description, important, private, deadline, completed,user) VALUES(?,?,?,?,?,?,1)';
+    db.all(sql, [id, task.description, task.important, task.private, task.deadline, task.completed], function (err) {
       if (err) {
-        console.log(err);
         reject(err);
       }
       else {
-        console.log(id);
         resolve(id);
       }
     });
@@ -68,9 +72,6 @@ const createTask = function (row) {
 
 
 exports.TaskList = function TaskList() {
-
-  const db = new sqlite.Database('tasks.db', (err) => { if (err) throw err; });
-
   this.getAll = (filter) => {
     let sql;
     return new Promise((resolve, reject) => {
