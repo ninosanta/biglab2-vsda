@@ -149,4 +149,39 @@ exports.TaskList = function TaskList() {
       });
     });
   };
+
+/**
+ * Update an existing task with a given id
+ */
+ exports.updateTask = function(task, id) {
+  //if(task.deadline){
+  //  task.deadline = dayjs.moment(task.deadline).format("YYYY-MM-DD HH:mm");
+  //}
+  return new Promise((resolve, reject) => {
+      const sql = 'UPDATE tasks SET description = ?, important = ?, private = ?, deadline = ?, completed = ? WHERE id = ?';
+      db.run(sql, [task.description, task.important, task.private, task.deadline, task.completed, id], (err) => {
+          if(err){
+              console.log(err);
+              reject(err);
+          }
+          else
+              resolve(null);
+      })
+  });
+}
+
+/**
+ * Delete a task with given id
+ */
+  exports.deleteTask = function(id) {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM tasks WHERE id = ?';
+        db.run(sql, [id], (err) => {
+            if(err)
+                reject(err);
+            else 
+                resolve(null);
+        })
+    });
+  }
 }

@@ -74,5 +74,29 @@ app.post('/api/tasks', (req, res) => {
     }
 });
 
+//PUT /tasks/<taskId>
+app.put('/api/tasks/:taskId', (req,res) => {
+    const task = req.body;
+    if(!task){
+        res.status(400).end();
+    } else {
+        const task = req.body;
+        TaskDao.updateTask(task, req.params.taskId)
+            .then((result) => res.status(200).end())
+            .catch((err) => res.status(500).json({
+                errors: [{'param': 'Server', 'msg': err}],
+            }));
+    }
+});
+
+//DELETE /tasks/<taskId>
+app.delete('/api/tasks/:taskId', (req,res) => {
+    TaskDao.deleteTask(req.params.taskId)
+        .then((result) => res.status(204).end())
+        .catch((err) => res.status(500).json({
+            errors: [{'param': 'Server', 'msg': err}],
+        }));
+});
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
