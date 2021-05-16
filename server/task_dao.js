@@ -1,6 +1,5 @@
 'use strict';
 
-
 const sqlite = require("sqlite3");
 const dayjs = require("dayjs");
 
@@ -9,161 +8,176 @@ const db = new sqlite.Database('tasks.db', (err) => { if (err) throw err; });
 const localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(localizedFormat); // use shortcuts 'LLL' for date and time format
 
-function Task(id, description, isUrgent = false, isPrivate = true, deadline = '') {
+function Task(id, description, isImportant, isPrivate, isComleted, deadline) {
   this.id = id;
   this.description = description;
-  this.urgent = isUrgent;
+  this.important = isImportant;
   this.private = isPrivate;
-  // saved as dayjs object
-  this.deadline = deadline && dayjs(deadline);
-  this.completed = this.completed;
+  this.completed = isComleted;
+  this.deadline = (deadline === '')? '' : dayjs(deadline); // saved as dayjs object
   // dayjs().toString() prints GMT
   // LLL	stands for MMMM D, YYYY h:mm A see https://day.js.org/docs/en/display/format
 
   this.toString = () => {
-    return `Id: ${this.id}, ` +
-      `Description: ${this.description}, Urgent: ${this.urgent}, Private: ${this.private}, ` +
-      `Deadline: ${this._formatDeadline('LLL')}`;
+    return `Id: ${this.id}, 
+      Description: ${this.description}, 
+      Important: ${this.important}, 
+      Private: ${this.private}, 
+      Deadline: ${this._formatDeadline('LLL')}`;
   }
 
   this._formatDeadline = (format) => {
-    return this.deadline ? this.deadline.format(format) : '<not defined>';
+    return (this.deadline === '') ? '' : this.deadline.format(format);
   }
 }
 
+/**
+ * Genrate new task id based on the existing ones
+ */
 exports.getNewID = function () {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT MAX(id) AS result FROM tasks';
     db.all(sql, [], (err, rows) => {
-      if (err) {
+      if (err)
         reject(err);
-      }
-      else {
+      else
         resolve(rows.map(record => record.result)[0]+1);
-      }
-    });
-  });
-}
-
-exports.createTask = function (task, id) {
-  console.log("id ricevuto ");
-  console.log(id);
-  console.log(task);
-  let sql;
-  return new Promise((resolve, reject) => {
-    sql = 'INSERT INTO tasks(id,description, important, private, deadline, completed,user) VALUES(?,?,?,?,?,?,1)';
-    db.all(sql, [id, task.description, task.important, task.private, task.deadline, task.completed], function (err) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(id);
-      }
     });
   });
 }
 
 const createTask = function (row) {
-  const privateTask = (row.private === 1) ? true : false;
-  const urgent = (row.urgent === 1) ? true : false;
-  const completed = (row.completed === 1) ? true : false;
-  return new Task(row.tid, row.description, urgent, privateTask, completed, row.deadline);
+  const isImportant = (row.important === undefined)? false : row.important === 1 || row.important === true;
+  const isPrivate = (row.private === undefined)? true : row.private === 1 || row.private === true;
+  const isCompleted = (row.completed === undefined)? false : row.completed === 1 || row.completed === true;
+  const deadline = row.deadline? row.deadline : '';
+  return new Task(row.id, row.description, isImportant, isPrivate, isCompleted, deadline);
 }
 
-
-exports.TaskList = function TaskList() {
-  this.getAll = (filter) => {
-    let sql;
-    return new Promise((resolve, reject) => {
-      if (filter === undefined)
-        sql = 'SELECT * FROM tasks';
-      else {
-        switch (filter) {
-          case 'important':
-            sql = 'SELECT * FROM tasks WHERE important=1';
-            break;
-          case 'private':
-            sql = 'SELECT * FROM tasks WHERE private=1';
-            break;
-          case 'completed':
-            sql = 'SELECT * FROM tasks WHERE completed=1';
-            break;
-        }
-      }
-      console.log(sql);
-      db.all(sql, [], (err, rows) => {
-        if (err)
-          reject(err);
-        else {
-          const tasks = rows.map(record => new Task(record.id, record.description, record.important == 1, record.private == 1, record.deadline));
-          resolve(tasks);
-        }
-      });
-    });
-  };
-
-  this.getAfterDeadline = (deadline) => {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM tasks WHERE deadline > ?';
-      db.all(sql, [deadline.format()], (err, rows) => {
-        if (err)
-          reject(err);
-        else {
-          const tasks = rows.map(record => new Task(record.id, record.description, record.important == 1, record.private == 1, record.deadline));
-          resolve(tasks);
-        }
-      });
-    });
-  };
-
-
-  /**
- * Get a task with given id
+/**
+ * Add new task row
  */
-  this.getTask = (id) => {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM tasks WHERE id = ?";
-      console.log(sql);
-      db.all(sql, [id], (err, rows) => {
-        if (err)
-          reject(err);
-        else if (rows.length === 0)
-          resolve(undefined);
-        else {
-          const task = createTask(rows[0]);
-          resolve(task);
-        }
-      });
+exports.createTask = function (t, id) {
+  const task = createTask({id: id, description: t.description, important: t.important, private: t.private, completed: t.completed, deadline: t.deadline});
+  return new Promise((resolve, reject) => {
+    const sql = 'INSERT INTO tasks(id,description, important, private, deadline, completed, user) VALUES(?,?,?,?,?,?,1)';
+    db.all(sql, [task.id, task.description, task.important, task.private, task.deadline, task.completed], function (err) {
+      if (err) 
+        reject(err);
+      else
+        resolve(id);
     });
-  }
-  this.getWithWord = (word) => {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM tasks WHERE description LIKE ?";
-      db.all(sql, ["%" + word + "%"], (err, rows) => {
-        if (err)
-          reject(err);
-        else {
-          const tasks = rows.map(record => new Task(record.id, record.description, record.important == 1, record.private == 1, record.deadline));
-          resolve(tasks);
-        }
-      });
-    });
-  };
+  });
+}
 
 /**
- * Update an existing task with a given id
+ * Get all tasks respecting the given filter
  */
- exports.updateTask = function(task, id) {
+exports.getAll = function(filter) {
+  let sql = 'SELECT * FROM tasks';
+  switch (filter) {
+    case 'important':
+      sql += ' WHERE important = 1';
+      break;
+    case 'private':
+      sql += ' WHERE private = 1';
+      break;
+    case 'completed':
+      sql += ' WHERE completed = 1';
+      break;
+  }
+  return new Promise((resolve, reject) => {
+    db.all(sql, [], (err, rows) => {
+      if (err)
+        reject(err);
+      else {
+        const tasks = rows.map(record => createTask(record));
+        if(filter === 'today') resolve(tasks.filter(task => (task.deadline!=='')? task.deadline.isSame(dayjs(), 'day') : false));
+        if(filter === 'nextweek') resolve(tasks.filter(task => (task.deadline!=='')? task.deadline?.isAfter(dayjs(), 'day') && task.deadline?.isBefore(dayjs().add(7, 'day'), 'day') : false));
+        resolve(tasks);
+      }
+    });
+  });
+};
+
+/**
+ * Get all tasks expiring after the given deadline
+ */
+exports.getAfter = function(deadline) {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM tasks';
+    db.all(sql, [deadline.format()], (err, rows) => {
+      if (err)
+        reject(err);
+      else {
+        const tasks = rows.map(record => createTask(record));
+        resolve(tasks.filter(task => task.deadline.isAfter(dayjs(deadline))));
+      }
+    });
+  });
+};
+
+/**
+ * Get all tasks expiring before the given deadline
+ */
+exports.getBefore = function(deadline) {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM tasks';
+    db.all(sql, [deadline.format()], (err, rows) => {
+      if (err)
+        reject(err);
+      else {
+        const tasks = rows.map(record => createTask(record));
+        resolve(tasks.filter(task => task.deadline.isBefore(dayjs(deadline))));
+      }
+    });
+  });
+};
+
+/**
+ * Get a task with given id
+ */
+exports.getTask = function(id) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM tasks WHERE id = ?";
+    db.all(sql, [id], (err, rows) => {
+      if (err)
+        reject(err);
+      else if (rows.length === 0)
+        resolve(undefined);
+      else 
+        resolve(createTask(rows[0]));
+    });
+  });
+}
+
+/**
+ * Get a task which contains the given word (search)
+ */
+exports.getWithWord = function(word) {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM tasks WHERE description LIKE ?";
+    db.all(sql, ["%" + word + "%"], (err, rows) => {
+      if (err)
+        reject(err);
+      else
+        resolve(rows.map(record => createTask(record)));
+    });
+  });
+};
+
+/**
+ * Update an existing task with the given id
+ */
+exports.updateTask = function(task, id) {
   //if(task.deadline){
   //  task.deadline = dayjs.moment(task.deadline).format("YYYY-MM-DD HH:mm");
   //}
   return new Promise((resolve, reject) => {
       const sql = 'UPDATE tasks SET description = ?, important = ?, private = ?, deadline = ?, completed = ? WHERE id = ?';
       db.run(sql, [task.description, task.important, task.private, task.deadline, task.completed, id], (err) => {
-          if(err){
-              console.log(err);
+          if(err)
               reject(err);
-          }
           else
               resolve(null);
       })
@@ -171,17 +185,31 @@ exports.TaskList = function TaskList() {
 }
 
 /**
- * Delete a task with given id
+ * Change the mark of the task corresponding the given id with the given one
  */
-  exports.deleteTask = function(id) {
-    return new Promise((resolve, reject) => {
-        const sql = 'DELETE FROM tasks WHERE id = ?';
-        db.run(sql, [id], (err) => {
-            if(err)
-                reject(err);
-            else 
-                resolve(null);
-        })
-    });
-  }
+exports.markTask = function(mark, id) {
+  return new Promise((resolve, reject) => {
+      const sql = 'UPDATE tasks SET completed = ? WHERE id = ?';
+      db.run(sql, [mark, id], (err) => {
+          if(err)
+              reject(err);
+          else
+              resolve(null);
+      })
+  });
+}
+
+/**
+ * Delete a task with the given id
+ */
+exports.deleteTask = function(id) {
+  return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM tasks WHERE id = ?';
+      db.run(sql, [id], (err) => {
+          if(err)
+              reject(err);
+          else 
+              resolve(null);
+      })
+  });
 }

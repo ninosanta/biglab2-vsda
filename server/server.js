@@ -9,11 +9,9 @@ let app = new express();
 app.use(morgan('tiny'));
 app.use(express.json());
 
-let taskList = new TaskDao.TaskList();
-
 //GET /tasks/all/<filter>
 app.get('/api/tasks/all/:filter', (req, res) => {
-    taskList.getAll(req.params.filter)
+    TaskDao.getAll(req.params.filter)
         .then((tasks) => {
             res.json(tasks);
         })
@@ -25,9 +23,8 @@ app.get('/api/tasks/all/:filter', (req, res) => {
 });
 
 //GET /tasks/all
-//TODO: filtri per data
 app.get('/api/tasks/all', (req, res) => {
-    taskList.getAll(req.params.filter)
+    TaskDao.getAll(req.params.filter)
         .then((tasks) => {
             res.json(tasks);
         })
@@ -40,13 +37,12 @@ app.get('/api/tasks/all', (req, res) => {
 
 //GET /tasks/<taskId>
 app.get('/api/tasks/:taskId', (req, res) => {
-    taskList.getTask(req.params.taskId)
-        .then((course) => {
-            if (!course) {
+    TaskDao.getTask(req.params.taskId)
+        .then((task) => {
+            if (!task)
                 res.status(404).send();
-            } else {
-                res.json(course);
-            }
+            else
+                res.json(task);
         })
         .catch((err) => {
             res.status(500).json({
@@ -72,6 +68,21 @@ app.post('/api/tasks', (req, res) => {
             res.status(500).json({ errors: [{ 'param': 'Server', 'msg': err }], })
         });
     }
+});
+
+//PUT /tasks/mark/<taskId>
+app.put('/api/tasks/mark/:taskId', (req,res) => {
+    TaskDao.getTask(req.params.taskId)
+        .then((task) => {
+            TaskDao.markTask(task.completed? 0 : 1, req.params.taskId)
+                .then((result) => res.status(200).end())
+                .catch((err) => res.status(500).json({
+                    errors: [{'param': 'Server', 'msg': err}],
+                }));
+        }
+        ).catch((err) => res.status(500).json({
+            errors: [{'param': 'Server', 'msg': err}],
+        }));
 });
 
 //PUT /tasks/<taskId>
