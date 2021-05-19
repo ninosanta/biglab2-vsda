@@ -2,27 +2,38 @@ import dayjs from 'react-dayjs'
 
 const baseURL = "/api";
 
-function Task(id, description, isImportant, isPrivate, isCompleted, deadline) {
-    this.id = id;
-    this.description = description;
-    this.important = isImportant;
-    this.private = isPrivate;
-    this.completed = isCompleted;
-    this.deadline = (deadline === '')? '' : dayjs(deadline); // saved as dayjs object
-}
 
 async function getTasks(filter) {
     let url = "/tasks/all";
-    if(filter){
-        const queryParams = "?filter=" + filter;
+    if (filter) {
+        const queryParams = "/" + filter;
         url += queryParams;
     }
     const response = await fetch(baseURL + url);
     const tasksJson = await response.json();
-    if(response.ok){
-        return tasksJson.map((t) => new Task(t.id,t.description,t.important, t.privateTask,t.completed,t.deadline));
+    const Task = (id, description, isImportant, isPrivate, isCompleted, deadline) => {
+        let obj = {
+            id: id,
+            description: description,
+            important: isImportant,
+            isprivate: isPrivate,
+            completed: isCompleted,
+            deadline: (deadline === '') ? '' : dayjs(deadline) // saved as dayjs object
+        }
+        return obj;
+    }
+    if (response.ok) {
+        console.log("response è ok");
+        let toRet = tasksJson.map((t) => {
+            let task = Task(t.id, t.description, t.important, t.privateTask, t.completed, t.deadline);
+            console.log(task);
+        }
+        );
+        console.log(toRet);
+        return toRet;
     } else {
-        let err = {status: response.status, errObj:tasksJson};
+        let err = { status: response.status, errObj: tasksJson };
+        console.log(err);
         throw err;  // An object with the error coming from the server
     }
 }

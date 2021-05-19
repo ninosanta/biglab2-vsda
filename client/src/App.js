@@ -8,14 +8,14 @@ import NavBarFilters from './Components/NavBarFilters';
 import NavBarMobile from './Components/NavBarMobile';
 import TasksList from './Components/Task';
 import ModalTask from './Components/ModalTask';
+import { useEffect } from 'react';
 
-/*const fakeTasks = [ // id: 0 is "false" so we should start from 1
+const fakeTasks = [ // id: 0 is "false" so we should start from 1
   { id: 1, completed: 'false', description: 'task1', important: 'true', private: 'false', deadline: '2021-04-29T12:00' },
   { id: 2, completed: 'true', description: 'task2', important: 'false', private: 'false', deadline: '' },
   { id: 3, completed: 'true', description: 'pizza', important: 'false', private: 'true', deadline: '2021-05-12T08:30' },
   { id: 4, completed: 'false', description: 'lasagna', important: 'false', private: 'false', deadline: '1999-01-01T00:00' }
-];*/
-
+];
 
 const filters = [
   { label: 'All', icon: 'inbox' },
@@ -28,10 +28,29 @@ const filters = [
 const daytimeFilters = ['All', 'Morning', 'Afternoon', 'Evening', 'Night'];
 
 function App() {
+  const [tasks, setTasks] = useState(fakeTasks);
   const [open, setOpen] = useState(false);
-  const [tasks, setTasks] = useState(getTasks());
   const [modalTask, setModalTask] = useState({ show: false, task: undefined });
   const [search, setSearch] = useState('');
+
+
+  const handleErrors = (err)=>{
+    if (err) {
+        if (err.status && err.status === 401) {
+        }
+    }
+  }
+
+  useEffect(() => {
+    getTasks()
+      .then((t) => {
+        setTasks(t)
+      })
+      .catch((errorObj) => {
+        console.log("errore nel useEffect");
+        console.log(errorObj);
+      });
+  }, []);
 
   const handleModalTask = (show, task) => {
     setModalTask({ show: show, task: task });
@@ -47,7 +66,7 @@ function App() {
     },
 
     editTask: (task) => {
-      
+
       setTasks(oldTasks => oldTasks.map((t) => { return t.id === task.id ? task : t }));
     },
 
@@ -59,7 +78,7 @@ function App() {
   function selectFilter(filter) {
     let icon;
     filters.forEach(f => {
-      if(f.label === filter) icon = f.icon;
+      if (f.label === filter) icon = f.icon;
       document.getElementById(`filter-${f.label}-icon`).classList.replace(`bi-${f.icon}-fill`, `bi-${f.icon}`);
       document.getElementById(`filter-mobile-${f.label}-icon`).classList.replace(`bi-${f.icon}-fill`, `bi-${f.icon}`);
     });
@@ -76,11 +95,11 @@ function App() {
     <Router>
       <Container fluid={true} className='pe-3 m-0'>
         <Col className='p-0 m-0'>
-          <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={open} setOpen={setOpen} filters={filters} setFilter={selectFilter} setSearch={setSearch}/></Row>
+          <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={open} setOpen={setOpen} filters={filters} setFilter={selectFilter} setSearch={setSearch} /></Row>
           <Row>
-            <NavBarFilters filters={filters} setFilter={selectFilter} setSearch={setSearch}/>
+            <NavBarFilters filters={filters} setFilter={selectFilter} setSearch={setSearch} />
             <Col className='p-5 m-0 mr-md-4'>
-              <TasksList tasks={tasks} filters={filters} handleTaskList={handleTaskList} search={search}/>
+              <TasksList tasks={tasks} filters={filters} handleTaskList={handleTaskList} search={search} />
             </Col>
           </Row>
         </Col>
