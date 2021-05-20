@@ -9,6 +9,9 @@ import NavBarMobile from './Components/NavBarMobile';
 import TasksList from './Components/Task';
 import ModalTask from './Components/ModalTask';
 import { useEffect } from 'react';
+import dayjs from 'react-dayjs'
+
+const baseURL = "/api";
 
 const fakeTasks = [ // id: 0 is "false" so we should start from 1
   { id: 1, completed: 'false', description: 'task1', important: 'true', private: 'false', deadline: '2021-04-29T12:00' },
@@ -34,24 +37,15 @@ function App() {
   const [search, setSearch] = useState('');
   const [update, setUpdate] = useState(true);
 
-  const handleErrors = (err)=>{
-    if (err) {
-        if (err.status && err.status === 401) {
-        }
-    }
-  }
-
-  useEffect(()=> {
-    const getTasksApi = async() => {
-      const newTasks = getTasks();
-      console.log("ciao");
-      console.log(newTasks);
-      setTasks(newTasks);
+  useEffect(() => {
+    if (update) {
+      console.log("dentro useEffect");
+      const tasks = getTasks();
+      setTasks(tasks);
       setUpdate(false);
-    };
-    if(update)
-      getTasksApi();
-  }, []);
+      console.log("finito update");
+    }
+  }, [update]);
 
   const handleModalTask = (show, task) => {
     setModalTask({ show: show, task: task });
@@ -94,21 +88,22 @@ function App() {
 
   return (
     <Router>
-      <Container fluid={true} className='pe-3 m-0'>
-        <Col className='p-0 m-0'>
-          <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={open} setOpen={setOpen} filters={filters} setFilter={selectFilter} setSearch={setSearch} /></Row>
-          <Row>
-            <NavBarFilters filters={filters} setFilter={selectFilter} setSearch={setSearch} />
-            <Col className='p-5 m-0 mr-md-4'>
-              <TasksList tasks={tasks} filters={filters} handleTaskList={handleTaskList} search={search} />
-            </Col>
-          </Row>
-        </Col>
-        <Button className='btn btn-lg btn-primary position-fixed rounded-circle' style={{ width: '3.5rem', height: '3.5rem', bottom: '2rem', right: '2rem', zIndex: '2' }} onClick={() => handleModalTask(true, undefined)}>
-          <i className='bi bi-plus-circle-dotted text-light d-flex justify-content-center' style={{ fontSize: '2rem' }} />
-        </Button>
-        <Modal show={modalTask.show} task={modalTask.task} handleModalTask={handleModalTask} handleTaskList={handleTaskList} />
-      </Container>
+      {update ? <></> :
+        <Container fluid={true} className='pe-3 m-0'>
+          <Col className='p-0 m-0'>
+            <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={open} setOpen={setOpen} filters={filters} setFilter={selectFilter} setSearch={setSearch} /></Row>
+            <Row>
+              <NavBarFilters filters={filters} setFilter={selectFilter} setSearch={setSearch} />
+              <Col className='p-5 m-0 mr-md-4'>
+                <TasksList tasks={tasks} filters={filters} handleTaskList={handleTaskList} search={search} />
+              </Col>
+            </Row>
+          </Col>
+          <Button className='btn btn-lg btn-primary position-fixed rounded-circle' style={{ width: '3.5rem', height: '3.5rem', bottom: '2rem', right: '2rem', zIndex: '2' }} onClick={() => handleModalTask(true, undefined)}>
+            <i className='bi bi-plus-circle-dotted text-light d-flex justify-content-center' style={{ fontSize: '2rem' }} />
+          </Button>
+          <Modal show={modalTask.show} task={modalTask.task} handleModalTask={handleModalTask} handleTaskList={handleTaskList} />
+        </Container>}
     </Router>
   );
 }

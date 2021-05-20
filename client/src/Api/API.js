@@ -11,22 +11,11 @@ async function getTasks(filter) {
     }
     const response = await fetch(baseURL + url);
     const tasksJson = await response.json();
-    const array = [];
 
     if (response.ok) {
-        console.log("response è ok"); 
-        let toRet = tasksJson.forEach(t => {
-            const important = (t.important === undefined)? false : t.important === 1 || t.important === true;
-            const isprivate = (t.private === undefined)? true : t.private === 1 || t.private === true;
-            const completed = (t.completed === undefined)? false : t.completed === 1 || t.completed === true;
-            const deadline = (t.deadline === undefined)? dayjs(deadline) : '';
-            let task = { id: t.id, description: t.description,  important: important, isprivate: isprivate, completed: completed, deadline: deadline};
-            array.push(task);
-        }
-        );
         console.log("task ricevute: ");
-        console.log(array);
-        return toRet;
+        console.log(tasksJson);
+        return tasksJson;
     } else {
         let err = { status: response.status, errObj: tasksJson };
         console.log(err);
