@@ -11,25 +11,21 @@ async function getTasks(filter) {
     }
     const response = await fetch(baseURL + url);
     const tasksJson = await response.json();
-    const Task = (id, description, isImportant, isPrivate, isCompleted, deadline) => {
-        let obj = {
-            id: id,
-            description: description,
-            important: isImportant,
-            isprivate: isPrivate,
-            completed: isCompleted,
-            deadline: (deadline === '') ? '' : dayjs(deadline) // saved as dayjs object
-        }
-        return obj;
-    }
+    const array = [];
+
     if (response.ok) {
-        console.log("response è ok");
-        let toRet = tasksJson.map((t) => {
-            let task = Task(t.id, t.description, t.important, t.privateTask, t.completed, t.deadline);
-            console.log(task);
+        console.log("response è ok"); 
+        let toRet = tasksJson.forEach(t => {
+            const important = (t.important === undefined)? false : t.important === 1 || t.important === true;
+            const isprivate = (t.private === undefined)? true : t.private === 1 || t.private === true;
+            const completed = (t.completed === undefined)? false : t.completed === 1 || t.completed === true;
+            const deadline = (t.deadline === undefined)? dayjs(deadline) : '';
+            let task = { id: t.id, description: t.description,  important: important, isprivate: isprivate, completed: completed, deadline: deadline};
+            array.push(task);
         }
         );
-        console.log(toRet);
+        console.log("task ricevute: ");
+        console.log(array);
         return toRet;
     } else {
         let err = { status: response.status, errObj: tasksJson };

@@ -32,7 +32,7 @@ function App() {
   const [open, setOpen] = useState(false);
   const [modalTask, setModalTask] = useState({ show: false, task: undefined });
   const [search, setSearch] = useState('');
-
+  const [update, setUpdate] = useState(true);
 
   const handleErrors = (err)=>{
     if (err) {
@@ -41,15 +41,16 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    getTasks()
-      .then((t) => {
-        setTasks(t)
-      })
-      .catch((errorObj) => {
-        console.log("errore nel useEffect");
-        console.log(errorObj);
-      });
+  useEffect(()=> {
+    const getTasksApi = async() => {
+      const newTasks = getTasks();
+      console.log("ciao");
+      console.log(newTasks);
+      setTasks(newTasks);
+      setUpdate(false);
+    };
+    if(update)
+      getTasksApi();
   }, []);
 
   const handleModalTask = (show, task) => {
