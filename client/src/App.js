@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { BrowserRouter as Router, Redirect } from 'react-router-dom';
-import getTasks from './Api/API'
+import API from './Api/API'
 import NavBarFilters from './Components/NavBarFilters';
 import NavBarMobile from './Components/NavBarMobile';
 import TasksList from './Components/Task';
@@ -40,11 +40,10 @@ function App() {
   useEffect(() => {
     if (update) {
       console.log("dentro useEffect");
-      getTasks().then((t) => {
+      API.getTasks().then((t) => {
         setTasks(t);
         setUpdate(false);
         console.log("finito update");
-        console.log(tasks)
       });
     }
   }, [update]);
@@ -56,6 +55,7 @@ function App() {
   const handleTaskList = {
     addTask: (task) => {
       setTasks(oldTasks => [{ id: oldTasks.length + 1, completed: task.completed, description: task.description, important: task.important, private: task.private, deadline: task.deadline }, ...oldTasks]);
+      API.addTask(task).then(()=>setUpdate(true));
     },
 
     setEditTask: (task) => {
@@ -63,12 +63,12 @@ function App() {
     },
 
     editTask: (task) => {
-
       setTasks(oldTasks => oldTasks.map((t) => { return t.id === task.id ? task : t }));
     },
 
     deleteTask: (id) => {
       setTasks(oldTask => oldTask.filter(t => t.id !== id));
+      API.deleteTask(id).then(()=>setUpdate(true));
     }
   }
 

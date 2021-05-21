@@ -12,19 +12,55 @@ async function getTasks(filter) {
     const response = await fetch(baseURL + url);
     const tasksJson = await response.json();
 
-    if (response.ok) {
-        console.log("task ricevute: ");
-        console.log(tasksJson);
+    if (response.ok)
         return tasksJson;
-    } else {
+    else {
         let err = { status: response.status, errObj: tasksJson };
-        console.log(err);
         throw err;  // An object with the error coming from the server
     }
 }
 
 
-export default getTasks;
+async function addTask(task) {
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + "/tasks", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(task),
+        }).then( (response) => {
+            if(response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);} ) // error msg in the response body
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+async function deleteTask(taskId) {
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + "/tasks/" + taskId, {
+            method: 'DELETE'
+        }).then( (response) => {
+            if(response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);} ) // error msg in the response body
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+const API = {deleteTask, addTask, getTasks};
+export default API;
 
 /*export async function getPublicTasks() {
     let url = "/tasks/public";
