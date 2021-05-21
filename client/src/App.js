@@ -40,10 +40,12 @@ function App() {
   useEffect(() => {
     if (update) {
       console.log("dentro useEffect");
-      const tasks = getTasks();
-      setTasks(tasks);
-      setUpdate(false);
-      console.log("finito update");
+      getTasks().then((t) => {
+        setTasks(t);
+        setUpdate(false);
+        console.log("finito update");
+        console.log(tasks)
+      });
     }
   }, [update]);
 
