@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ListGroup, Badge, Form, Row, Col } from 'react-bootstrap';
 import DayJS from 'react-dayjs';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import getTasks from '../Filters'
+import getTasks from '../Filters';
+import Spinners from './Loading';
 import { useLocation } from 'react-router-dom';
 
 function TasksList (props) {
@@ -26,9 +27,11 @@ function TasksList (props) {
                     return (
                         <Route key={`route-${filter.label}`} path={`/${filter.label}`}>
                             <Row className='d-flex flex-row'><h1 id='filter-title' className='mt-4'>{filter.label}</h1></Row>
-                            <ListGroup variant='flush'>
-                                {getTasks(props.tasks, filter.label).map( (task) => <Task key={`task-${task.id}`} task={task} handleTaskList={props.handleTaskList}/>)}
-                            </ListGroup>
+                            {(props.update)?
+                                <Spinners/> : 
+                                <ListGroup variant='flush'>
+                                    {getTasks(props.tasks, filter.label).map( (task) => <Task key={`task-${task.id}`} task={task} handleTaskList={props.handleTaskList}/>)}
+                                </ListGroup>}
                         </Route>
                 )})}
             </Switch>

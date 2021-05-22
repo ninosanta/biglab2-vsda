@@ -1,4 +1,4 @@
-import {Nav, OverlayTrigger, Popover, FormControl, Image, ButtonGroup, Button, Col } from 'react-bootstrap';
+import { Nav, OverlayTrigger, Popover, FormControl, Image, ButtonGroup, Button, Col } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 
 function NavBarFilters(props) {
