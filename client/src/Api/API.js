@@ -2,7 +2,6 @@ import dayjs from 'react-dayjs'
 
 const baseURL = "/api";
 
-
 async function getTasks(filter) {
     let url = "/tasks/all";
     if (filter) {
@@ -19,7 +18,6 @@ async function getTasks(filter) {
         throw err;  // An object with the error coming from the server
     }
 }
-
 
 async function addTask(task) {
     return new Promise((resolve, reject) => {
@@ -59,7 +57,28 @@ async function deleteTask(taskId) {
     });
 }
 
-const API = {deleteTask, addTask, getTasks};
+async function updateTask(task) {
+    return new Promise((resolve, reject) => {
+        fetch(baseURL + "/tasks/" + task.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(task),
+        }).then( (response) => {
+            if(response.ok) {
+
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);} ) // error msg in the response body
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+const API = {deleteTask, addTask, getTasks, updateTask};
 export default API;
 
 /*export async function getPublicTasks() {

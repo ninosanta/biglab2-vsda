@@ -38,7 +38,7 @@ function App() {
 
   const handleModalTask = (show, task) => {
     setModalTask({ show: show, task: task });
-  }
+  };
 
   const handleTaskList = {
     addTask: (task) => {
@@ -52,6 +52,7 @@ function App() {
 
     editTask: (task) => {
       setTasks(oldTasks => oldTasks.map((t) => { return t.id === task.id ? task : t }));
+      API.updateTask(task).then(()=>setUpdate(true));
     },
 
     deleteTask: (id) => {

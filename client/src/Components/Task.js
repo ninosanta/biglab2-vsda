@@ -47,7 +47,7 @@ function Task(props) {
             <ListGroup.Item id={`task-${props.task.id}`} className='list-group-item d-flex w-100' action>
                 <Col>
                     <Row>
-                        <Col xs={4}> <TaskDescription id={props.task.id} completed={taskCompleted} description={props.task.description} setCompleted={ event => setCompleted(event.target.checked) } important={props.task.important === 'true' || props.task.important === true}/> </Col>
+                        <Col xs={4}> <TaskDescription id={props.task.id} completed={taskCompleted} description={props.task.description} setCompleted={ event => { props.task.completed = event.target.checked; setCompleted(event.target.checked); props.handleTaskList.editTask(props.task)} } important={props.task.important === 'true' || props.task.important === true} /> </Col>
                         <Col xs={1}> <TaskPrivateIcon id={props.task.id} private={props.task.private === 'true' || props.task.private === true}/> </Col>
                         <Col>
                             <Row>
@@ -65,6 +65,7 @@ function Task(props) {
         </Row>
     );
 }
+
 
 function TaskDescription (props) {
     return (
