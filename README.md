@@ -1,12 +1,12 @@
 # BigLab 2 - Class: 2021 WA1
 
-## Team name: TEAM_NAME
+## Team name: VSDA
 
 Team members:
-* s123456 LASTNAME FIRSTNAME
-* s123456 LASTNAME FIRSTNAME 
-* s123456 LASTNAME FIRSTNAME
-* s123456 LASTNAME FIRSTNAME (delete line if not needed)
+* s284101 Vespa Antonio
+* s281561 Santa Rosa Antonino
+* s278176 De Stefano Carmine
+* s265350 Alagna Francesco
 
 ## Instructions
 
@@ -25,8 +25,34 @@ Finally, remember to add the `final` tag for the final submission, otherwise it 
 
 Provide a short description for API with the required parameters, follow the proposed structure.
 
-* [HTTP Method] [URL, with any parameter]
-* [One-line about what this API is doing]
-* [Sample request, with body (if any)]
-* [Sample response, with body (if any)]
-* [Error responses, if any]
+### Get tasks
+* URL: /api/tasks/all/[filter]
+* HTTP Method: GET
+* Description: retrieve the list of all the tasks, or the filtered ones
+* Sample request:
+    ```
+    GET http://localhost:3001/api/tasks/all/important
+    ```
+* Request body: EMPTY
+* Response:
+* Response body:
+    ```
+    [ {id, description, important, private, completed, deadline}, {...}, ... ] 
+    ```
+* Error responses:
+
+
+### Add task
+* URL:
+* HTTP Method:
+* Description:
+* Sample request:
+    ```
+    ```
+* Request body:
+* Response:
+* Response body:
+    ```  
+    ```
+* Error responses:
+
