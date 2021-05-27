@@ -5,7 +5,7 @@ const baseURL = "/api";
 async function getTasks(filter) {
     let url = "/tasks/all";
     if (filter) {
-        const queryParams = "/" + filter;
+        const queryParams = "/" + filter.toLowerCase();
         url += queryParams;
     }
     const response = await fetch(baseURL + url);

@@ -24,11 +24,12 @@ function App() {
   const [modalTask, setModalTask] = useState({ show: false, task: undefined });
   const [search, setSearch] = useState('');
   const [update, setUpdate] = useState(true);
+  const [showFil, setShowFil] = useState('');
 
   useEffect(() => {
     if (update) {
       //setTimeout(() => {
-        API.getTasks().then((t) => {
+        API.getTasks(showFil).then((t) => {
           setTasks(t);
           setUpdate(false);
         });
@@ -67,6 +68,7 @@ function App() {
       if (f.label === filter) icon = f.icon;
       document.getElementById(`filter-${f.label}-icon`).classList.replace(`bi-${f.icon}-fill`, `bi-${f.icon}`);
       document.getElementById(`filter-mobile-${f.label}-icon`).classList.replace(`bi-${f.icon}-fill`, `bi-${f.icon}`);
+      setShowFil(filter);setUpdate(true);
     });
     if (filters.map(f => f.label).includes(filter)) {
       setSearch('');

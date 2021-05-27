@@ -92,8 +92,8 @@ exports.getAll = function(filter) {
         reject(err);
       else {
         const tasks = rows.map(record => createTask(record));
-        if(filter === 'today') resolve(tasks.filter(task => (task.deadline!=='')? task.deadline.isSame(dayjs(), 'day') : false));
-        if(filter === 'nextweek') resolve(tasks.filter(task => (task.deadline!=='')? task.deadline?.isAfter(dayjs(), 'day') && task.deadline?.isBefore(dayjs().add(7, 'day'), 'day') : false));
+        if(filter === "today's") resolve(tasks.filter(task => (task.deadline!=='')? task.deadline.isSame(dayjs(), 'day') : false));
+        if(filter === "next%20week's") resolve(tasks.filter(task => (task.deadline!=='')? task.deadline?.isAfter(dayjs(), 'day') && task.deadline?.isBefore(dayjs().add(7, 'day'), 'day') : false));
         resolve(tasks);
       }
     });
