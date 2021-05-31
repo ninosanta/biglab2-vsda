@@ -11,7 +11,7 @@ exports.getUser = (email, password) => {
     // username = email
     return new Promise(
         (resolve, reject) => {
-            const query = "SELECT * FROM user WHERE email = ?";
+            const query = "SELECT * FROM users WHERE email = ?";
             db.get(query, [email], (err, row) => {
                 if(err)
                     reject(err);  // DB error
@@ -25,6 +25,7 @@ exports.getUser = (email, password) => {
                                 resolve({id: row.id, username: row.email, name: row.name});
                             else
                                 resolve(false);  // password did not match!
+                        }
                     )
                 }
                     
