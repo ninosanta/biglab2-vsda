@@ -1,43 +1,6 @@
 import { useState } from 'react';
 import { ListGroup, Badge, Form, Row, Col } from 'react-bootstrap';
 import DayJS from 'react-dayjs';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import getTasks from '../Filters';
-import Spinners from './Loading';
-import { useLocation } from 'react-router-dom';
-
-function TasksList (props) {
-    const location = useLocation();
-    
-    return (
-        <>
-            {props.search !== '' ? <Redirect to='/search'/> : <></>}
-            {(location.pathname === '/search' && props.search === '') ? <Redirect to='/'/> : <></>}
-            <Switch>
-                <Route exact path='/'>
-                    <Redirect to={`/${props.filters[0].label}`}/>
-                </Route>
-                <Route path='/search'>
-                    <Row className='d-flex flex-row'><h1 id='filter-title' className='mt-4'>{props.search}</h1></Row>
-                    <ListGroup variant='flush'>
-                        {getTasks(props.tasks, props.search).map( (task) => <Task key={`task-${task.id}`} task={task} handleTaskList={props.handleTaskList}/>)}
-                    </ListGroup>
-                </Route>
-                {props.filters.map(filter => {
-                    return (
-                        <Route key={`route-${filter.label}`} path={`/${filter.label}`}>
-                            <Row className='d-flex flex-row'><h1 id='filter-title' className='mt-4'>{filter.label}</h1></Row>
-                            {(props.update)?
-                                <Spinners/> : 
-                                <ListGroup variant='flush'>
-                                    {getTasks(props.tasks, filter.label).map( (task) => <Task key={`task-${task.id}`} task={task} handleTaskList={props.handleTaskList}/>)}
-                                </ListGroup>}
-                        </Route>
-                )})}
-            </Switch>
-        </>
-    );
-}
 
 function Task(props) {
     const [taskCompleted, setCompleted] = useState(props.task.completed === 'true' || props.task.completed === true);
@@ -104,4 +67,4 @@ function TaskControls(props) {
     );
 }
 
-export default TasksList;
+export default Task;

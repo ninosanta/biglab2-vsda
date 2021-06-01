@@ -6,6 +6,9 @@ const morgan = require('morgan');
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
+const PORT = 3001;
+let app = new express();
+
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
@@ -59,9 +62,6 @@ app.use(session({
 // then, init passport
 app.use(passport.initialize());
 app.use(passport.session());
-
-const PORT = 3001;
-let app = new express();
 
 app.use(morgan('tiny'));
 app.use(express.json());

@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { BrowserRouter as Router, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import API from './Api/API';
+import getTasks from './Filters';
 import NavBarFilters from './Components/NavBarFilters';
 import NavBarMobile from './Components/NavBarMobile';
-import TasksList from './Components/Task';
+import Task from './Components/Task';
 import ModalTask from './Components/ModalTask';
-import { useEffect } from 'react';
-import { LoginForm, LogoutButton } from './Components/LoginComponents';
+import Spinners from './Components/Loading';
+import Login from './Components/Login';
+import PageNotFound from './Components/PageNotFound';
 
 const filters = [
   { label: 'All', icon: 'inbox' },
@@ -24,11 +26,11 @@ function App() {
   const [open, setOpen] = useState(false);
   const [modalTask, setModalTask] = useState({ show: false, task: undefined });
   const [search, setSearch] = useState('');
+
   const [update, setUpdate] = useState(true);
   const [showFil, setShowFil] = useState('');
   const [authUser, setAuthUser] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
-
 
   useEffect(() => {
     const checkAuth = async => {
@@ -65,7 +67,7 @@ function App() {
   }
 
   // Add a login method
-  const login = (credentials) => {
+  const login = (credentials) => {/*
     API.userLogin(credentials.username, credentials.password).then(
       (user) => {
         setAuthUser(user);
@@ -75,7 +77,7 @@ function App() {
         const err0 = errorObj.errors[0];
         this.setState({ authErr: err0 });
       }
-    );
+    );*/
   }
 
   const handleModalTask = (show, task) => {
@@ -123,25 +125,60 @@ function App() {
   return (
     <Router>
       <Container fluid={true} className='pe-3 m-0'>
-        <Row>
-          {loggedIn ? <LogoutButton logout={logout} /> : <Redirect to="/login" />}
-        </Row>
-        <Col className='p-0 m-0'>
-          <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={open} setOpen={setOpen} filters={filters} setFilter={selectFilter} setSearch={setSearch} /></Row>
-          <Row>
-            <NavBarFilters filters={filters} setFilter={selectFilter} />
-            <Col className='p-5 m-0 mr-md-4'>
-              <TasksList update={update} tasks={tasks} filters={filters} handleTaskList={handleTaskList} search={search} loggedIn={loggedIn} login={login} />
-            </Col>
-          </Row>
-        </Col>
-        <Button className='btn btn-lg btn-primary position-fixed rounded-circle' style={{ width: '3.5rem', height: '3.5rem', bottom: '2rem', right: '2rem', zIndex: '2' }} onClick={() => handleModalTask(true, undefined)}>
-          <i className='bi bi-plus-circle-dotted text-light d-flex justify-content-center' style={{ fontSize: '2rem' }} />
-        </Button>
-        {(modalTask.show) ? <ModalTask show={modalTask.show} task={modalTask.task} handleModalTask={handleModalTask} handleTaskList={handleTaskList} /> : <></>}
+        <Search search={search} defaultFilter={filters[0].label}/>
+        <Switch>
+          <Route exact path='/'><Redirect to='/login'/></Route>
+          <Route path='/login'>{loggedIn ? <Redirect to={`/${filters[0].label}`}/> : <Login login={login}/>}</Route>
+          <Route path='/search'>
+            <TaskPage filter={search} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+          </Route>
+          {filters.map(filter => {
+            return (
+              <Route key={`route-${filter.label}`} path={`/${filter.label}`}>
+                <TaskPage filter={filter.label} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+              </Route>
+          )})}
+          <Route>
+            <TaskPage loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+          </Route>
+        </Switch>
       </Container>
     </Router>
   );
+}
+
+function TaskPage(props) {
+  return (<>
+    {/*props.loggedIn ? <Logout logout={props.logout} /> : <Redirect to="/login" />*/}
+    <Col className='p-0 m-0'>
+      <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} setFilter={props.selectFilter} setSearch={props.setSearch} /></Row>
+      <Row>
+        <NavBarFilters filters={props.filters} setFilter={props.selectFilter} />
+        <Col className='p-5 m-0 mr-md-4'>
+        <Row className='d-flex flex-row'><h1 id='filter-title' className='mt-4'>{props.filter}</h1></Row>
+        {(props.filter)? 
+          (props.update)?
+            <Spinners/> : 
+            <ListGroup variant='flush'>
+                {getTasks(props.tasks, props.filter).map( (task) => <Task key={`task-${task.id}`} task={task} handleTaskList={props.handleTaskList}/>)}
+            </ListGroup>
+        : <PageNotFound/>}
+        </Col>
+      </Row>
+    </Col>
+    {(props.filter)? 
+    <Button className='btn btn-lg btn-primary position-fixed rounded-circle' style={{ width: '3.5rem', height: '3.5rem', bottom: '2rem', right: '2rem', zIndex: '2' }} onClick={() => {props.handleModalTask(true, undefined)}}>
+      <i className='bi bi-plus-circle-dotted text-light d-flex justify-content-center' style={{ fontSize: '2rem' }} />
+    </Button> : <></>}
+    {(props.filter && props.modalTask.show) ? <ModalTask show={props.modalTask.show} task={props.modalTask.task} handleModalTask={props.handleModalTask} handleTaskList={props.handleTaskList} /> : <></>}
+  </>);
+}
+
+function Search(props) {
+  const location = useLocation();
+  if(props.search !== '') return (<Redirect to='/search'/>);
+  if(location.pathname === '/search' && props.search === '') return (<Redirect to={`/${props.defaultFilter}`}/>);
+  return (<></>);
 }
 
 export default App;
