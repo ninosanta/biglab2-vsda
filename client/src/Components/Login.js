@@ -9,6 +9,7 @@ function Login (props) {
     const [password, setPassword] = useState('');
     const [repassword, setRepassword] = useState('');
     const [message, setMessage] = useState('');
+    const [viewPassword, setViewPassword] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -70,20 +71,27 @@ function Login (props) {
                             <Form.Label>Username</Form.Label>
                             <InputGroup className='mb-3' hasValidation>
                                 <Form.Control id='form-username' type='email' placeholder='E-mail' aria-describedby='email-addon' required value={username} onChange={e => {handleChange('username', e.target.value)}} />
-                                <InputGroup.Text id='email-addon'>@</InputGroup.Text>
+                                <InputGroup.Append><InputGroup.Text id='email-addon'>@</InputGroup.Text></InputGroup.Append>
                             </InputGroup>
                         </Form.Group>
                     </Form.Row>
                     <Form.Row>
                         <Form.Group controlId='password' as={Col}>
                             <Form.Label>Password</Form.Label>
-                            <Form.Control id='loginform-password' type='password' placeholder='Password' required value={password} onChange={e => {handleChange('password', e.target.value)}} />
+                            <InputGroup hasValidation>
+                                <Form.Control id='form-password' type={(viewPassword)? 'text' : 'password'} placeholder='Password' aria-describedby='password-addon' required value={password} onChange={e => {handleChange('password', e.target.value)}} />
+                                <InputGroup.Append>
+                                    <Button id='password-addon' onClick={() => {setViewPassword(old => !old)}}>
+                                        <i className={(viewPassword)? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'}></i>
+                                    </Button>
+                                </InputGroup.Append>
+                            </InputGroup>
                         </Form.Group>
                     </Form.Row>
                     {signup ?
                         <Form.Row>
                             <Form.Group controlId='repassword' as={Col}>
-                                <Form.Control id='loginform-password' type='password' placeholder='Reenter password' required value={repassword} onChange={e => {handleChange('repassword', e.target.value)}} />
+                                    <Form.Control id='form-repassword' type={(viewPassword)? 'text' : 'password'} placeholder='Reenter password' required value={repassword} onChange={e => {handleChange('repassword', e.target.value)}} />
                             </Form.Group>
                         </Form.Row> : 
                         <></>

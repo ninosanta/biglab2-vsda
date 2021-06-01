@@ -28,7 +28,7 @@ function App() {
   const [search, setSearch] = useState('');
 
   const [update, setUpdate] = useState(true);
-  const [showFil, setShowFil] = useState('');
+  const [filter, setFilter] = useState('');
   const [authUser, setAuthUser] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -48,12 +48,12 @@ function App() {
 
   useEffect(() => {
     if (update && loggedIn) {
-      //setTimeout(() => {
-      API.getTasks(showFil).then((t) => {
+      API.getTasks(filter).then((t) => {
+        //setTimeout(() => {
         setTasks(t);
         setUpdate(false);
+        //}, 1000);
       });
-      //}, 1000);
     }
   }, [update, loggedIn]);
 
@@ -105,20 +105,21 @@ function App() {
     }
   }
 
-  function selectFilter(filter) {
+  function selectFilter(selectedFilter) {
     let icon;
     filters.forEach(f => {
-      if (f.label === filter) icon = f.icon;
+      if (f.label === selectedFilter) icon = f.icon;
       document.getElementById(`filter-${f.label}-icon`).classList.replace(`bi-${f.icon}-fill`, `bi-${f.icon}`);
       document.getElementById(`filter-mobile-${f.label}-icon`).classList.replace(`bi-${f.icon}-fill`, `bi-${f.icon}`);
-      setShowFil(filter); setUpdate(true);
+      setFilter(selectedFilter);
+      setUpdate(true);
     });
-    if (filters.map(f => f.label).includes(filter)) {
+    if (filters.map(f => f.label).includes(selectedFilter)) {
       setSearch('');
-      document.getElementById(`filter-${filter}-icon`).classList.replace(`bi-${icon}`, `bi-${icon}-fill`);
-      document.getElementById(`filter-mobile-${filter}-icon`).classList.replace(`bi-${icon}`, `bi-${icon}-fill`);
+      document.getElementById(`filter-${selectedFilter}-icon`).classList.replace(`bi-${icon}`, `bi-${icon}-fill`);
+      document.getElementById(`filter-mobile-${selectedFilter}-icon`).classList.replace(`bi-${icon}`, `bi-${icon}-fill`);
     } else {
-      setSearch(filter);
+      setSearch(selectedFilter);
     }
   }
 
@@ -132,10 +133,10 @@ function App() {
           <Route path='/search'>
             <TaskPage filter={search} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
           </Route>
-          {filters.map(filter => {
+          {filters.map(f => {
             return (
-              <Route key={`route-${filter.label}`} path={`/${filter.label}`}>
-                <TaskPage filter={filter.label} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+              <Route key={`route-${f.label}`} path={`/${f.label}`}>
+                <TaskPage filter={f.label} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
               </Route>
           )})}
           <Route>
@@ -149,11 +150,11 @@ function App() {
 
 function TaskPage(props) {
   return (<>
-    {/*props.loggedIn ? <Logout logout={props.logout} /> : <Redirect to="/login" />*/}
+    {props.loggedIn ? <Logout logout={props.logout} /> : <Redirect to="/login" />}
     <Col className='p-0 m-0'>
-      <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} setFilter={props.selectFilter} setSearch={props.setSearch} /></Row>
+      <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} selectFilter={props.selectFilter} setSearch={props.setSearch} /></Row>
       <Row>
-        <NavBarFilters filters={props.filters} setFilter={props.selectFilter} />
+        <NavBarFilters filters={props.filters} selectFilter={props.selectFilter} />
         <Col className='p-5 m-0 mr-md-4'>
         <Row className='d-flex flex-row'><h1 id='filter-title' className='mt-4'>{props.filter}</h1></Row>
         {(props.filter)? 

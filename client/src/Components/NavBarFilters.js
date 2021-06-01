@@ -16,13 +16,13 @@ function NavBarFilters(props) {
                                     className='pt-3 pb-3 btn-primary'
                                     variant='link'
                                     block
-                                    onClick={ () => props.setFilter(filter.label) }>
+                                    onClick={ () => props.selectFilter(filter.label) }>
                                     <i id={`filter-${filter.label}-icon`} className={`bi ${(`/${filter.label}` === location.pathname)? `bi-${filter.icon}-fill` : `bi-${filter.icon}`} d-flex justify-content-center text-light`} aria-label={filter.label} style={{ fontSize: '1.5em' }}/>
                                 </Button>
                             </Link>);
                     })}
 
-                    <Search setFilter={props.setFilter} filters={props.filters}/>
+                    <Search selectFilter={props.selectFilter} filters={props.filters}/>
 
                 </ButtonGroup>
 
@@ -33,7 +33,7 @@ function NavBarFilters(props) {
         </Col>);
 }
 
-function Search (props) {
+function Search(props) {
     return (
         <OverlayTrigger placement='right' overlay={
             <Popover id='search-popover'>
@@ -44,7 +44,7 @@ function Search (props) {
                         className='mx-2 w-auto'
                         placeholder='Type to filter...'
                         onChange={(e) => {
-                            if(e.target.value.length <= 15) props.setFilter(e.target.value);
+                            if(e.target.value.length <= 15) props.selectFilter(e.target.value);
                         }}/>
                 </Popover.Content>
             </Popover>

@@ -24,14 +24,14 @@ function NavBarMobile(props) {
                                     className='p-2 btn-primary w-100 text-light'
                                     style={{ fontSize: '1.5em' }}
                                     title={filter.label}
-                                    onClick={ () => props.setFilter(filter.label) }>
+                                    onClick={ () => props.selectFilter(filter.label) }>
                                     <Row>
                                         <Col md={1} xs={2}><i id={`filter-mobile-${filter.label}-icon`} className={`bi ${(`/${filter.label}` === location.pathname)? `bi-${filter.icon}-fill` : `bi-${filter.icon}`} d-flex justify-content-center`}  aria-label={filter.label}></i></Col>
                                         <Col>{filter.label}</Col>
                                     </Row>
                                 </Link>);
                         })}
-                        <Search setFilter={props.setFilter} ilters={props.filters}/>
+                        <Search selectFilter={props.selectFilter} ilters={props.filters}/>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
@@ -50,7 +50,7 @@ function Search (props) {
                             placeholder='Type to filter...' 
                             className='w-100' 
                             onChange={(e) => {
-                                if(e.target.value.length <= 15) props.setFilter(e.target.value);
+                                if(e.target.value.length <= 15) props.selectFilter(e.target.value);
                             }}/>
                     </Form>
                 </Col>
