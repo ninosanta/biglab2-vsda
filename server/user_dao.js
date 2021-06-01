@@ -1,6 +1,6 @@
 'use strict';
-
-const db = require('./db');
+const sqlite = require("sqlite3");
+const db = new sqlite.Database('users.db', (err) => { if (err) throw err; });
 const bcrypt = require('bcrypt');
 
 /**

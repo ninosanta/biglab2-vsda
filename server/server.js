@@ -4,7 +4,7 @@ const TaskDao = require('./task_dao');
 const morgan = require('morgan');
 
 const passport = require("passport");
-const passportLocal = require("passport-local");
+const LocalStrategy = require("passport-local").Strategy;
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
