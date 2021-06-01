@@ -96,7 +96,7 @@ function Login (props) {
                         </Form.Row> : 
                         <></>
                     }
-                    <Form.Row><Form.Group controlId='link' as={Col}><a className='text-primary' onClick={() => setSignup(!signup)}>{(signup)? 'Login' : 'Sign up'}</a></Form.Group></Form.Row>
+                    <Form.Row><Form.Group controlId='link' as={Col}><a className='text-primary' href='#' onClick={() => setSignup(!signup)}>{(signup)? 'Login' : 'Sign up'}</a></Form.Group></Form.Row>
                     <Form.Row>{(message !== '') ? <Alert variant='danger'>{message}</Alert> : <></>}</Form.Row>
                     <Modal.Footer>
                         <Button variant='secondary' onClick={handleChange}>Clear</Button>
