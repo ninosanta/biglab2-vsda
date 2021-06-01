@@ -67,17 +67,19 @@ function App() {
   }
 
   // Add a login method
-  const login = (credentials) => {/*
-    API.userLogin(credentials.username, credentials.password).then(
-      (user) => {
-        setAuthUser(user);
-      }
-    ).catch(
-      (errorObj) => {
-        const err0 = errorObj.errors[0];
-        this.setState({ authErr: err0 });
-      }
-    );*/
+  const login = (credentials) => {
+    API.userLogin(credentials.username, credentials.password)
+      .then( (user) => {
+          setAuthUser(user);
+          return true;
+        }
+      ).catch(
+        (errorObj) => {
+          const err0 = errorObj.errors[0];
+          this.setState({ authErr: err0 });
+          return false;
+        }
+      );
   }
 
   const handleModalTask = (show, task) => {
