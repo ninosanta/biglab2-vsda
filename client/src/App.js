@@ -25,6 +25,7 @@ function App() {
   const [search, setSearch] = useState('');
   const [update, setUpdate] = useState(true);
   const [showFil, setShowFil] = useState('');
+  const [authUser, setAuthUser] = useState('');
 
   useEffect(() => {
     if (update) {
@@ -36,6 +37,36 @@ function App() {
       //}, 1000);
     }
   }, [update]);
+
+
+  //Add a logout method
+  logout = () => {
+    API.userLogout().then(() => {
+      setAuthUser(null);
+      setTasks([]);
+    });
+  }
+
+  // Add a login method
+  login = (username, password) => {
+    API.userLogin(username, password).then(
+      (user) => { 
+        API.getTasks()
+          .then((tasks) => {
+            this.setState({tasks: tasks, projects: this.getProjects(tasks), authUser: user, authErr: null});
+            this.props.history.push("/tasks");
+          })
+          .catch((errorObj) => {
+            this.handleErrors(errorObj);
+        });
+      }
+    ).catch(
+      (errorObj) => {
+        const err0 = errorObj.errors[0];
+        this.setState({authErr: err0});
+      }
+    );
+  }
 
   const handleModalTask = (show, task) => {
     setModalTask({ show: show, task: task });
