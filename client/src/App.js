@@ -71,6 +71,7 @@ function App() {
     API.userLogin(username, password)
       .then( (user) => {
           setAuthUser(user);
+          setLoggedIn(true);
           return true;
         }
       ).catch(
