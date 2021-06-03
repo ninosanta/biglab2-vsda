@@ -26,12 +26,12 @@ passport.use(new LocalStrategy(
 // serialize and de-serialize the user (user object <-> session)
 // we serialize the user id and we store it in the session: the session is very small in this way
 passport.serializeUser((user, done) => {
-    done(null, user.username);
+    done(null, user.id);
 });
 
 // starting from the data in the session, we extract the current (logged-in) user
-passport.deserializeUser((username, done) => {
-    userDao.getUser(username)
+passport.deserializeUser((id, done) => {
+    userDao.getUserById(id)
         .then(user => {
             done(null, user); // this will be available in req.user
         }).catch(err => {
@@ -54,7 +54,7 @@ const isLoggedIn = (req, res, next) => {
 // set up the session
 app.use(session({
     // by default, Passport uses a MemoryStore to keep track of the sessions
-    secret: 'a secret sentence not to share with anybody and anywhere, used to sign the session ID cookie',
+    secret: 'a secret sentence not to share with anybody and anywhere,sed to sign the session ID cookie',
     resave: false,
     saveUninitialized: false
 }));
