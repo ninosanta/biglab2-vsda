@@ -31,8 +31,9 @@ function Login (props) {
                     return;
                 }
             }
-            props.login({ username, password }).then((success) => {
-                if(success)setMessage('');
+            props.login(username,password).then((success) => {
+                if(success)
+                    setMessage('');
                 else setMessage("Wrong username and/or password");
             });
         } else {

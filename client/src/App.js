@@ -58,7 +58,7 @@ function App() {
   }, [update, loggedIn]);
 
   //Add a logout method
-  const logout = () => {
+  const logout = async () => {
     API.userLogout().then(() => {
       setAuthUser(null);
       setLoggedIn(false);
@@ -67,8 +67,8 @@ function App() {
   }
 
   // Add a login method
-  const login = (credentials) => {
-    API.userLogin(credentials.username, credentials.password)
+  const login = async (username,password) => {
+    API.userLogin(username, password)
       .then( (user) => {
           setAuthUser(user);
           return true;
@@ -76,7 +76,6 @@ function App() {
       ).catch(
         (errorObj) => {
           const err0 = errorObj.errors[0];
-          this.setState({ authErr: err0 });
           return false;
         }
       );

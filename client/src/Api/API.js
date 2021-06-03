@@ -80,7 +80,7 @@ async function updateTask(task) {
 
 async function userLogin(username, password) {
     return new Promise((resolve, reject) => {
-        fetch(baseURL + '/login', {
+        fetch(baseURL + '/sessions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -88,11 +88,13 @@ async function userLogin(username, password) {
             body: JSON.stringify({username: username, password: password}),
         }).then((response) => {
             if (response.ok) {
+                console.log("yesss, loggato");
                 response.json().then((user) => {
                     resolve(user);
                 });
             } else {
                 // analyze the cause of error
+                console.log("login fallito");
                 response.json()
                     .then((obj) => { reject(obj); }) // error msg in the response body
                     .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
