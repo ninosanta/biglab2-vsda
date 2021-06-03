@@ -15,10 +15,10 @@ function User(id, name, hash){
 }
 
 const createUser = function (row) {
-    const name = row.name;
     const id = row.id;
+    const username = row.username;
     const hash = row.hash;
-    return new User(name, id, hash);
+    return new User(username, id, hash);
 }
 
 exports.getUser = function (username,password) {

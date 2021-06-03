@@ -17,7 +17,6 @@ passport.use(new LocalStrategy(
         userDao.getUser(username, password).then((user) => {
             if (!user)
                 return done(null, false, { message: 'Incorrect username and/or password.' });
-
             return done(null, user);
         })
     }
@@ -177,8 +176,9 @@ app.post('/api/sessions', function (req, res, next) {
         /* error should be null whenever the authN is good and, 
          * in this case, user will contain the information. */
 
-        if (err)
+        if (err) {
             return next(err);
+        }
 
         if (!user) {
             // display wrong login messages

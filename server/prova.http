@@ -35,3 +35,9 @@ Content-type: application/json
 DELETE http://localhost:3001/api/tasks/15
 Content-type: text/plain
 
+###
+
+POST http://localhost:3001/api/sessions
+Content-type: application/json
+
+{ "username" : "antonio", "password" : "vespa", "id":1}
