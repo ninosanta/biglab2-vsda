@@ -152,7 +152,7 @@ function App() {
 
 function TaskPage(props) {
   return (<>
-    {props.loggedIn ? </> : <Redirect to="/login" />}
+    {props.loggedIn ? <Logout logout={props.logout} /> : <Redirect to="/login" />}
     <Col className='p-0 m-0'>
       <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} selectFilter={props.selectFilter} setSearch={props.setSearch} /></Row>
       <Row>
