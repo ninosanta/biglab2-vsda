@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, ListGroup } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import API from './Api/API';
 import getTasks from './Filters';
@@ -152,7 +152,7 @@ function App() {
 
 function TaskPage(props) {
   return (<>
-    {props.loggedIn ? <Logout logout={props.logout} /> : <Redirect to="/login" />}
+    {props.loggedIn ? <></> : <Redirect to="/login" />}
     <Col className='p-0 m-0'>
       <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} selectFilter={props.selectFilter} setSearch={props.setSearch} /></Row>
       <Row>

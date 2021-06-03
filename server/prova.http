@@ -40,4 +40,6 @@ Content-type: text/plain
 POST http://localhost:3001/api/sessions
 Content-type: application/json
 
-{ "username" : "antonio", "password" : "vespa", "id":1}
+{ "username" : "john.doe@polito.it", "password" : "vespa", "id":1}
+
+
