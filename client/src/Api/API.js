@@ -105,8 +105,8 @@ async function userLogin(username, password) {
 
 async function userLogout(username, password) {
     return new Promise((resolve, reject) => {
-        fetch(baseURL + '/logout', {
-            method: 'POST',
+        fetch(baseURL + '/sessions/current', {
+            method: 'DELETE',
         }).then((response) => {
             if (response.ok) {
                 resolve(null);

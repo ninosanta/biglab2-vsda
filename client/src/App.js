@@ -9,6 +9,7 @@ import NavBarFilters from './Components/NavBarFilters';
 import NavBarMobile from './Components/NavBarMobile';
 import Task from './Components/Task';
 import ModalTask from './Components/ModalTask';
+import ModalProfile from './Components/ModalProfile';
 import Spinners from './Components/Loading';
 import Login from './Components/Login';
 import PageNotFound from './Components/PageNotFound';
@@ -128,21 +129,22 @@ function App() {
   return (
     <Router>
       <Container fluid={true} className='pe-3 m-0'>
+        {loggedIn ? <></> : <Redirect to="/login" />}
         <Search search={search} defaultFilter={filters[0].label}/>
         <Switch>
           <Route exact path='/'><Redirect to='/login'/></Route>
           <Route path='/login'>{loggedIn ? <Redirect to={`/${filters[0].label}`}/> : <Login login={login}/>}</Route>
           <Route path='/search'>
-            <TaskPage filter={search} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+            <TaskPage filter={search} user={authUser} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
           </Route>
           {filters.map(f => {
             return (
               <Route key={`route-${f.label}`} path={`/${f.label}`}>
-                <TaskPage filter={f.label} loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+                <TaskPage filter={f.label} user={authUser} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
               </Route>
           )})}
           <Route>
-            <TaskPage loggedIn={loggedIn} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
+            <TaskPage user={authUser} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
           </Route>
         </Switch>
       </Container>
@@ -151,12 +153,13 @@ function App() {
 }
 
 function TaskPage(props) {
+  const [showModalProfile, setShowModalProfile] = useState(false);
+
   return (<>
-    {props.loggedIn ? <></> : <Redirect to="/login" />}
     <Col className='p-0 m-0'>
-      <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} selectFilter={props.selectFilter} setSearch={props.setSearch} /></Row>
+      <Row className='d-block d-lg-none bg-primary mb-5'><NavBarMobile open={props.open} setOpen={props.setOpen} filters={props.filters} selectFilter={props.selectFilter} setSearch={props.setSearch} setShowModalProfile={setShowModalProfile}/></Row>
       <Row>
-        <NavBarFilters filters={props.filters} selectFilter={props.selectFilter} />
+        <NavBarFilters filters={props.filters} selectFilter={props.selectFilter} setShowModalProfile={setShowModalProfile}/>
         <Col className='p-5 m-0 mr-md-4'>
         <Row className='d-flex flex-row'><h1 id='filter-title' className='mt-4'>{props.filter}</h1></Row>
         {(props.filter)? 
@@ -173,6 +176,7 @@ function TaskPage(props) {
     <Button className='btn btn-lg btn-primary position-fixed rounded-circle' style={{ width: '3.5rem', height: '3.5rem', bottom: '2rem', right: '2rem', zIndex: '2' }} onClick={() => {props.handleModalTask(true, undefined)}}>
       <i className='bi bi-plus-circle-dotted text-light d-flex justify-content-center' style={{ fontSize: '2rem' }} />
     </Button> : <></>}
+    <ModalProfile show={showModalProfile} setShowModalProfile={setShowModalProfile} user={props.user} logout={props.logout}/>
     {(props.filter && props.modalTask.show) ? <ModalTask show={props.modalTask.show} task={props.modalTask.task} handleModalTask={props.handleModalTask} handleTaskList={props.handleTaskList} /> : <></>}
   </>);
 }

@@ -1,4 +1,4 @@
-import { Nav, OverlayTrigger, Popover, FormControl, Image, ButtonGroup, Button, Col } from 'react-bootstrap';
+import { Nav, OverlayTrigger, Popover, FormControl, ButtonGroup, Button, Col } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 
 function NavBarFilters(props) {
@@ -21,14 +21,9 @@ function NavBarFilters(props) {
                                 </Button>
                             </Link>);
                     })}
-
                     <Search selectFilter={props.selectFilter} filters={props.filters}/>
-
+                    <Profile setShowModalProfile={props.setShowModalProfile}/>
                 </ButtonGroup>
-
-                <div className='pe-auto'>
-                    <Image id='profile-image' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg' roundedCircle style={{ marginTop: '5rem', width: '3em', height: '3em' }}></Image>
-                </div>
             </Nav>
         </Col>);
 }
@@ -51,6 +46,19 @@ function Search(props) {
         }>
             <Button id='search' key='search' className='pt-3 pb-3 btn-primary text-light' variant='link' block><i className='bi bi-search d-flex justify-content-center' aria-label='Search' style={{ fontSize: '1.5rem' }}></i></Button>
         </OverlayTrigger>
+    );
+}
+
+function Profile(props) {    
+    return (
+        <Button
+            id='profile-button'
+            className='pt-3 pb-3 btn-primary'
+            variant='link'
+            block
+            onClick={ () => props.setShowModalProfile(old => !old) }>
+            <i id='profile-logout' className='bi bi-person-fill d-flex justify-content-center text-light' aria-label='profile' style={{ fontSize: '1.5em' }}></i>
+        </Button>
     );
 }
 

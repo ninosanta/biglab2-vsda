@@ -5,6 +5,8 @@ const morgan = require('morgan');
 
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");  // initializated down in the file with other middlewares
+const userDao = require("./user_dao");  // module for check username and password
 
 const PORT = 3001;
 let app = new express();
@@ -38,10 +40,6 @@ passport.deserializeUser((id, done) => {
         });
 });
 
-
-const session = require("express-session");  // initializated down in the file with other middlewares
-const userDao = require("./user_dao");  // module for check username and password
-
 // custom middleware: check if a given request is coming from an authenticated user
 const isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated())
@@ -66,7 +64,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 //GET /tasks/all/<filter>
-app.get('/api/tasks/all/:filter', (req, res) => {
+app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {
     TaskDao.getAll(req.params.filter)
         .then((tasks) => {
             res.json(tasks);
@@ -79,7 +77,7 @@ app.get('/api/tasks/all/:filter', (req, res) => {
 });
 
 //GET /tasks/all
-app.get('/api/tasks/all', (req, res) => {
+app.get('/api/tasks/all', isLoggedIn, (req, res) => {
     TaskDao.getAll(req.params.filter)
         .then((tasks) => {
             res.json(tasks);
@@ -92,7 +90,7 @@ app.get('/api/tasks/all', (req, res) => {
 });
 
 //GET /tasks/<taskId>
-app.get('/api/tasks/:taskId', (req, res) => {
+app.get('/api/tasks/:taskId', isLoggedIn, (req, res) => {
     TaskDao.getTask(req.params.taskId)
         .then((task) => {
             if (!task)
@@ -108,7 +106,7 @@ app.get('/api/tasks/:taskId', (req, res) => {
 });
 
 //POST /tasks
-app.post('/api/tasks', (req, res) => {
+app.post('/api/tasks', isLoggedIn, (req, res) => {
     const task = req.body;
     if (!task) {
         res.status(400).end();
@@ -127,7 +125,7 @@ app.post('/api/tasks', (req, res) => {
 });
 
 //PUT /tasks/mark/<taskId>
-app.put('/api/tasks/mark/:taskId', (req, res) => {
+app.put('/api/tasks/mark/:taskId', isLoggedIn, (req, res) => {
     TaskDao.getTask(req.params.taskId)
         .then((task) => {
             TaskDao.markTask(task.completed ? 0 : 1, req.params.taskId)
@@ -142,7 +140,7 @@ app.put('/api/tasks/mark/:taskId', (req, res) => {
 });
 
 //PUT /tasks/<taskId>
-app.put('/api/tasks/:taskId', (req, res) => {
+app.put('/api/tasks/:taskId', isLoggedIn, (req, res) => {
     const task = req.body;
     if (!task) {
         res.status(400).end();
@@ -157,7 +155,7 @@ app.put('/api/tasks/:taskId', (req, res) => {
 });
 
 //DELETE /tasks/<taskId>
-app.delete('/api/tasks/:taskId', (req, res) => {
+app.delete('/api/tasks/:taskId', isLoggedIn, (req, res) => {
     TaskDao.deleteTask(req.params.taskId)
         .then((result) => res.status(204).end())
         .catch((err) => res.status(500).json({
@@ -199,7 +197,7 @@ app.post('/api/sessions', function (req, res, next) {
 
 // DELETE /sessions/current 
 // logout
-app.delete('/api/sessions/current', (req, res) => {
+app.delete('/api/sessions/current', isLoggedIn, (req, res) => {
     req.logout();
     res.end();
 });

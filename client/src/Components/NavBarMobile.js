@@ -8,7 +8,7 @@ function NavBarMobile(props) {
         <>
             <Navbar bg='primary' expand='lg' fixed='top'>
                 <Navbar.Brand>
-                    <Image id='profile-image-mobile' className='ml-3' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg' roundedCircle style={{ height: '2rem', width: '2rem' }}></Image>
+                    <Profile user={props.user} logout={props.logout} setShowModalProfile={props.setShowModalProfile}/>
                 </Navbar.Brand>
                 <Navbar.Toggle style={{border:'none'}} >
                     <i className='bi bi-list-nested text-light' aria-label='Home' style={{ fontSize: '1.5rem' }}></i>
@@ -53,6 +53,18 @@ function Search (props) {
                                 if(e.target.value.length <= 15) props.selectFilter(e.target.value);
                             }}/>
                     </Form>
+                </Col>
+            </Row>
+        </Nav.Link>
+    );
+}
+
+function Profile(props) {    
+    return (
+        <Nav.Link id='filter-profile' className='pl-3 btn-primary text-light' style={{ fontSize: '1.5em' }} title='Profile'>
+            <Row>
+                <Col xs={1}>
+                    <i id='profile-logout' className='bi bi-person-fill' onClick={ () => props.setShowModalProfile(old => !old) }></i>
                 </Col>
             </Row>
         </Nav.Link>
