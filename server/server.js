@@ -8,9 +8,6 @@ const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");  // initializated down in the file with other middlewares
 const userDao = require("./user_dao");  // module for check username and password
 
-const PORT = 3001;
-let app = new express();
-
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
@@ -40,6 +37,12 @@ passport.deserializeUser((id, done) => {
         });
 });
 
+const PORT = 3001;
+let app = new express();
+
+app.use(morgan('tiny'));
+app.use(express.json());
+
 // custom middleware: check if a given request is coming from an authenticated user
 const isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated())
@@ -59,9 +62,6 @@ app.use(session({
 // then, init passport
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(morgan('tiny'));
-app.use(express.json());
 
 //GET /tasks/all/<filter>
 app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {

@@ -13,7 +13,7 @@ function ModalProfile (props) {
     }
 
     return (
-        <Modal show={props.show} onHide={handleClose} centered>
+        props.user && <Modal show={props.show} onHide={handleClose} centered>
             <Modal.Header closeButton><Modal.Title>{`Hi ${props.user.username}!`}</Modal.Title></Modal.Header>
             <Modal.Body className='bg-light'>
                 {`Name: ${props.user.name ? props.user.name : props.user.username}`}<br/>
