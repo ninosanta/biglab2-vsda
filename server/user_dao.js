@@ -22,7 +22,7 @@ const createUser = function (row) {
     return new User(id, username, name, hash);
 }
 
-exports.getUser = function (username, password) {
+exports.getUser = async function (username, password) {
     return new Promise((resolve, reject) => {
         const sql = "SELECT * FROM users WHERE username = ?"
         db.get(sql, [username], (err, row) => {
@@ -33,12 +33,13 @@ exports.getUser = function (username, password) {
             else {
                 const user = createUser(row);
                 bcrypt.compare(password, user.hash).then(result => {
-                    if (result)
+                    if (result){
                         resolve(user);
-                    else
+                    }
+                    else{
                         resolve(false);
-                })
-                resolve(user);
+                    }
+                });
             }
         });
     });

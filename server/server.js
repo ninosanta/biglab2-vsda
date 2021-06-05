@@ -14,8 +14,9 @@ const userDao = require("./user_dao");  // module for check username and passwor
 passport.use(new LocalStrategy(
     function (username, password, done) {
         userDao.getUser(username, password).then((user) => {
-            if (!user)
+            if (user === false) {
                 return done(null, false, { message: 'Incorrect username and/or password.' });
+            }
             return done(null, user);
         })
     }
@@ -65,7 +66,7 @@ app.use(passport.session());
 
 //GET /tasks/all/<filter>
 app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {
-    TaskDao.getAll(req.params.filter,req.user.id)
+    TaskDao.getAll(req.params.filter, req.user.id)
         .then((tasks) => {
             res.json(tasks);
         })
@@ -79,20 +80,20 @@ app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {
 //GET /tasks/all
 app.get('/api/tasks/all', isLoggedIn, (req, res) => {
     console.log(req.user.id);
-    TaskDao.getAll(req.params.filter,req.user.id)
+    TaskDao.getAll(req.params.filter, req.user.id)
         .then((tasks) => {
             res.json(tasks);
         })
         .catch((err) => {
             res.status(500).json({
-                errors: [{'msg': err }],
+                errors: [{ 'msg': err }],
             });
         });
 });
 
 //GET /tasks/<taskId>
 app.get('/api/tasks/:taskId', isLoggedIn, (req, res) => {
-    TaskDao.getTask(req.params.taskId,req.user.id)
+    TaskDao.getTask(req.params.taskId, req.user.id)
         .then((task) => {
             if (!task)
                 res.status(404).send();
