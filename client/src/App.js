@@ -43,22 +43,9 @@ function App() {
         setLoggedIn(true);
       } catch (err) {
         console.error(err.error);
+        //console.log("nessun utente loggato");
       }
     };
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = async => {
-      API.isAuthenticated().then(
-        (user) => {
-          setAuthUser(user);
-          setLoggedIn(true);
-        }
-      ).catch((err) => {
-        console.log("nessun utente loggato");
-      });
-    }
     checkAuth();
   }, []);
 
@@ -89,11 +76,10 @@ function App() {
       .then((user) => {
         setAuthUser(user);
         setLoggedIn(true);
-        console.log("ritorno true");
+        setUpdate(true);
         success = true;
       }
       ).catch(() => {
-        console.log("ritorno false");
         success = false;
       }
       );
