@@ -26,33 +26,154 @@ Finally, remember to add the `final` tag for the final submission, otherwise it 
 Provide a short description for API with the required parameters, follow the proposed structure.
 
 ### Get tasks
-* URL: /api/tasks/all/[filter]
-* HTTP Method: GET
-* Description: retrieve the list of all the tasks, or the filtered ones
+* URL: `/api/tasks/all/[filter]`
+* HTTP Method: `GET`
+* Description: retrieve the list of all the user's tasks, or the filtered ones
 * Sample request:
     ```
     GET http://localhost:3001/api/tasks/all/important
     ```
-* Request body: EMPTY
+* Request body: `EMPTY`
 * Response:
+    ```
+    HTTP/1.1 200 OK
+    ```
 * Response body:
     ```
-    [ {id, description, important, private, completed, deadline}, {...}, ... ] 
+    [ { id, description, important, private, completed, deadline }, {...}, ... ] 
     ```
 * Error responses:
+    ```
+    HTTP/1.1 404 Not Found
+    ```
 
 
 ### Add task
-* URL:
-* HTTP Method:
-* Description:
+* URL: `/api/tasks`
+* HTTP Method: `POST`
+* Description: add a user's task to the DB
 * Sample request:
     ```
+    POST http://localhost:3001/api/tasks
+    Content-type: application/json
+
+    { "description" : "Foo Bar", "important" : 1, "private" : 1, "deadline": "2021-07-21", "completed" : 0 }
     ```
 * Request body:
-* Response:
+    ```
+    { description, important, private, completed, deadline }
+    ```
+* Response: 
+    ```
+    HTTP/1.1 201 Created
+    ```
 * Response body:
-    ```  
+    ```
+    { id }  
     ```
 * Error responses:
+    ```
+    HTTP/1.1 500 Internal Server Error
+    ```
 
+### Delete task
+* URL: `/api/tasks/<taskID>`
+* HTTP Method: `DELETE`
+* Description: delete a user's task given its `ID`
+* Sample request:
+    ```
+    DELETE http://localhost:3001/api/tasks/1
+    Content-type: text/plain
+    ```
+* Request body: `EMPTY`
+* Response:
+    ```
+    HTTP/1.1 204 No Content
+    ```
+* Error responses:
+    ```
+    HTTP/1.1 204 No Content
+    ```
+
+### Update task
+* URL: `/api/tasks/<taskID>`
+* HTTP Method: `PUT`
+* Description: update a user's task given its id
+* Sample request:
+    ```
+    PUT http://localhost:3001/api/tasks/1
+    Content-type: application/json
+
+    { "description" : "Updated Task", "important" : 1, "private" : 0, "deadline": "2021-06-06", "completed" : 1 }
+    ```
+* Request body:
+    ```
+    { description, important, private, completed, deadline }
+    ```
+* Response: 
+    ```
+    HTTP/1.1 200 OK
+    ```
+
+
+### Uer login
+* URL: `/api/sessions/`
+* HTTP Method: `POST`
+* Description: user `login` through its `email`, `password`, and `id` 
+* Sample request:
+    ```
+    POST http://localhost:3001/api/sessions
+    Content-type: application/json
+
+    { "username" : "john.doe@polito.it", "password" : "passwordJD", "id":1}
+
+    ```
+* Request body:
+    ```
+    { username, password, id }
+    ```
+* Response:
+    ```
+    HTTP/1.1 200 OK
+    ```
+* Response body:
+    ```
+    { username, name, id, hash }
+    ```
+* Error responses:
+    ```
+    HTTP/1.1 401 Unauthorized
+    ```
+
+### User logout
+* URL: `/api/sessions/current`
+* HTTP Method: `DELETE`
+* Description: user `logout`
+* Sample request:
+    ```
+    DELETE http://localhost:3001/api/sessions/current
+    Content-type: application/json
+    ```
+* Request body: `EMPTY`
+* Response: 
+    ```
+    HTTP/1.1 200 OK
+    ```
+* Response body: `EMPTY`
+* Error responses:
+    ```
+    HTTP/1.1 404 Not Found
+    ```
+
+## Users inside `tasks.db`
+
+### John Doe
+* Username: `john.doe@polito.it`
+* Password: `passwordJD`
+
+### Mary Yellow
+* Username: `mary.yellow@polito.it`
+* Password: `passwordMY`
+
+### PS:
+To perform a `logout` click on the user's icon on the sidebar.
