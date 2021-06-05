@@ -121,8 +121,6 @@ async function userLogout(username, password) {
 }
 
 async function isAuthenticated(){
-    let url = "/user";
-    const response = await fetch(baseURL + url);
     const userJson = await response.json();
     if(response.ok){
         return userJson;
