@@ -75,7 +75,6 @@ function App() {
     await API.userLogin(username, password)
       .then((user) => {
         setAuthUser(user);
-        setLoggedIn(true);
         setUpdate(true);
         success = true;
       }
@@ -136,7 +135,7 @@ function App() {
         <Search search={search} defaultFilter={filters[0].label} />
         <Switch>
           <Route exact path='/'><Redirect to='/login' /></Route>
-          <Route path='/login'>{loggedIn ? <Redirect to={`/${filters[0].label}`} /> : <Login login={login} />}</Route>
+          <Route path='/login'>{loggedIn ? <Redirect to={`/${filters[0].label}`} /> : <Login login={login} user={authUser} setLoggedIn={setLoggedIn}/>}</Route>
           <Route path='/search'>
             <TaskPage filter={search} user={authUser} logout={logout} update={update} open={open} setOpen={setOpen} tasks={tasks} handleTaskList={handleTaskList} filters={filters} selectFilter={selectFilter} setSearch={setSearch} modalTask={modalTask} handleModalTask={handleModalTask} />
           </Route>
