@@ -65,7 +65,7 @@ app.use(passport.session());
 
 //GET /tasks/all/<filter>
 app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {
-    TaskDao.getAll(req.params.filter)
+    TaskDao.getAll(req.params.filter,req.user.id)
         .then((tasks) => {
             res.json(tasks);
         })
@@ -78,20 +78,21 @@ app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {
 
 //GET /tasks/all
 app.get('/api/tasks/all', isLoggedIn, (req, res) => {
-    TaskDao.getAll(req.params.filter)
+    console.log(req.user.id);
+    TaskDao.getAll(req.params.filter,req.user.id)
         .then((tasks) => {
             res.json(tasks);
         })
         .catch((err) => {
             res.status(500).json({
-                errors: [{ 'msg': err }],
+                errors: [{'msg': err }],
             });
         });
 });
 
 //GET /tasks/<taskId>
 app.get('/api/tasks/:taskId', isLoggedIn, (req, res) => {
-    TaskDao.getTask(req.params.taskId)
+    TaskDao.getTask(req.params.taskId,req.user.id)
         .then((task) => {
             if (!task)
                 res.status(404).send();
@@ -112,7 +113,7 @@ app.post('/api/tasks', isLoggedIn, (req, res) => {
         res.status(400).end();
     } else {
         TaskDao.getNewID().then((newID) => {
-            TaskDao.createTask(task, newID)
+            TaskDao.createTask(task, newID, req.user.id)
                 .then((id) => res.status(201).json({ "id": id }))
                 .catch((err) => {
                     res.status(500).json({ errors: [{ 'param': 'Server', 'msg': err }], })
@@ -126,7 +127,7 @@ app.post('/api/tasks', isLoggedIn, (req, res) => {
 
 //PUT /tasks/mark/<taskId>
 app.put('/api/tasks/mark/:taskId', isLoggedIn, (req, res) => {
-    TaskDao.getTask(req.params.taskId)
+    TaskDao.getTask(req.params.taskId, req.user.id)
         .then((task) => {
             TaskDao.markTask(task.completed ? 0 : 1, req.params.taskId)
                 .then((result) => res.status(200).end())
@@ -146,7 +147,7 @@ app.put('/api/tasks/:taskId', isLoggedIn, (req, res) => {
         res.status(400).end();
     } else {
         const task = req.body;
-        TaskDao.updateTask(task, req.params.taskId)
+        TaskDao.updateTask(task, req.params.taskId, req.user.id)
             .then((result) => res.status(200).end())
             .catch((err) => res.status(500).json({
                 errors: [{ 'param': 'Server', 'msg': err }],
@@ -156,7 +157,7 @@ app.put('/api/tasks/:taskId', isLoggedIn, (req, res) => {
 
 //DELETE /tasks/<taskId>
 app.delete('/api/tasks/:taskId', isLoggedIn, (req, res) => {
-    TaskDao.deleteTask(req.params.taskId)
+    TaskDao.deleteTask(req.params.taskId, req.user.id)
         .then((result) => res.status(204).end())
         .catch((err) => res.status(500).json({
             errors: [{ 'param': 'Server', 'msg': err }],
