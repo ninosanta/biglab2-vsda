@@ -16,7 +16,7 @@ function Login (props) {
         event.stopPropagation();
 
         if(event.currentTarget.checkValidity()) {
-            if(signup) {
+            /*if(signup) {
                 if(password !== repassword) {
                     setRepassword('');
                     setMessage("Passwords missmatch");
@@ -30,11 +30,15 @@ function Login (props) {
                     setValidated(true);
                     return;
                 }
-            }
+            }*/
             props.login(username,password).then((success) => {
+                console.log(success);
                 if(success)
                     setMessage('');
-                else setMessage("Wrong username and/or password");
+                else {
+                    //console.log();
+                    setMessage("Wrong username and/or password");
+                }
             });
         } else {
             if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(username)) setMessage("Invalid email format");

@@ -83,17 +83,21 @@ function App() {
   }
 
   // Add a login method
-  const login = async (username, password) => {
-    API.userLogin(username, password)
+  const login = async function (username, password) {
+    let success;
+    await API.userLogin(username, password)
       .then((user) => {
         setAuthUser(user);
         setLoggedIn(true);
-        return true;
+        console.log("ritorno true");
+        success = true;
       }
       ).catch(() => {
-        return false;
+        console.log("ritorno false");
+        success = false;
       }
       );
+    return success;
   }
 
   const handleModalTask = (show, task) => {
