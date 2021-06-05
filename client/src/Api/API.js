@@ -132,7 +132,17 @@ async function isAuthenticated(){
     }
 }
 
-const API = {deleteTask, addTask, getTasks, updateTask, isAuthenticated, userLogout, userLogin};
+async function getUserInfo() {
+    const response = await fetch(baseURL + '/sessions/current');
+    const userInfo = await response.json();
+    if (response.ok) {
+      return userInfo;
+    } else {
+      throw userInfo;  // an object with the error coming from the server
+    }
+  }
+
+const API = {deleteTask, addTask, getTasks, updateTask, isAuthenticated, getUserInfo, userLogout, userLogin};
 export default API;
 
 /*export async function getPublicTasks() {

@@ -33,6 +33,21 @@ function App() {
   const [authUser, setAuthUser] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
 
+  useEffect(()=> {
+    const checkAuth = async() => {
+      try {
+        // here you have the user info, if already logged in
+        // TODO: store them somewhere and use them, if needed
+        const user = await API.getUserInfo();
+        setAuthUser(user);
+        setLoggedIn(true);
+      } catch(err) {
+        console.error(err.error);
+      }
+    };
+    checkAuth();
+  }, []);
+
   useEffect(() => {
     const checkAuth = async => {
       API.isAuthenticated().then(
