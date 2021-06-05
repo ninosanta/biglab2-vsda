@@ -42,7 +42,7 @@ function App() {
         setAuthUser(user);
         setLoggedIn(true);
       } catch (err) {
-        console.error(err.error);
+        //console.error(err.error);
         //console.log("nessun utente loggato");
       }
     };

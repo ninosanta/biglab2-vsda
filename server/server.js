@@ -79,7 +79,6 @@ app.get('/api/tasks/all/:filter', isLoggedIn, (req, res) => {
 
 //GET /tasks/all
 app.get('/api/tasks/all', isLoggedIn, (req, res) => {
-    console.log(req.user.id);
     TaskDao.getAll(req.params.filter, req.user.id)
         .then((tasks) => {
             res.json(tasks);
