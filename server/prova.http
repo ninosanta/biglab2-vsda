@@ -42,4 +42,7 @@ Content-type: application/json
 
 { "username" : "john.doe@polito.it", "password" : "vespa", "id":1}
 
+###
+DELETE http://localhost:3001/api/sessions/current
+Content-type: application/json
 
