@@ -57,11 +57,11 @@ const createTask = function (row) {
 /**
  * Add new task row
  */
-exports.createTask = function (t, id) {
+exports.createTask = function (t, id, uid) {
   const task = createTask({id: id, description: t.description, important: t.important, private: t.private, completed: t.completed, deadline: t.deadline});
   return new Promise((resolve, reject) => {
-    const sql = 'INSERT INTO tasks(id,description, important, private, deadline, completed, user) VALUES(?,?,?,?,?,?,1)';
-    db.all(sql, [task.id, task.description, task.important, task.private, task.deadline, task.completed], function (err) {
+    const sql = 'INSERT INTO tasks(id,description, important, private, deadline, completed, user) VALUES(?,?,?,?,?,?,?)';
+    db.all(sql, [task.id, task.description, task.important, task.private, task.deadline, task.completed, uid], function (err) {
       if (err) 
         reject(err);
       else
@@ -73,21 +73,21 @@ exports.createTask = function (t, id) {
 /**
  * Get all tasks respecting the given filter
  */
-exports.getAll = function(filter) {
-  let sql = 'SELECT * FROM tasks';
+exports.getAll = function(filter, id) {
+  let sql = 'SELECT * FROM tasks WHERE user = ?';
   switch (filter) {
     case 'important':
-      sql += ' WHERE important = 1';
+      sql += ' AND important = 1';
       break;
     case 'private':
-      sql += ' WHERE private = 1';
+      sql += ' AND private = 1';
       break;
     case 'completed':
-      sql += ' WHERE completed = 1';
+      sql += ' AND completed = 1';
       break;
   }
   return new Promise((resolve, reject) => {
-    db.all(sql, [], (err, rows) => {
+    db.all(sql, [id], (err, rows) => {
       if (err)
         reject(err);
       else {
@@ -137,10 +137,10 @@ exports.getBefore = function(deadline) {
 /**
  * Get a task with given id
  */
-exports.getTask = function(id) {
+exports.getTask = function(id,uid) {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM tasks WHERE id = ?";
-    db.all(sql, [id], (err, rows) => {
+    const sql = "SELECT * FROM tasks WHERE id = ? AND user = ?";
+    db.all(sql, [id,uid], (err, rows) => {
       if (err)
         reject(err);
       else if (rows.length === 0)
@@ -169,13 +169,13 @@ exports.getWithWord = function(word) {
 /**
  * Update an existing task with the given id
  */
-exports.updateTask = function(task, id) {
+exports.updateTask = function(task, id, uid) {
   //if(task.deadline){
   //  task.deadline = dayjs.moment(task.deadline).format("YYYY-MM-DD HH:mm");
   //}
   return new Promise((resolve, reject) => {
-      const sql = 'UPDATE tasks SET description = ?, important = ?, private = ?, deadline = ?, completed = ? WHERE id = ?';
-      db.run(sql, [task.description, task.important, task.private, task.deadline, task.completed, id], (err) => {
+      const sql = 'UPDATE tasks SET description = ?, important = ?, private = ?, deadline = ?, completed = ? WHERE id = ? and user = ?';
+      db.run(sql, [task.description, task.important, task.private, task.deadline, task.completed, id, uid], (err) => {
           if(err)
               reject(err);
           else
@@ -202,10 +202,10 @@ exports.markTask = function(mark, id) {
 /**
  * Delete a task with the given id
  */
-exports.deleteTask = function(id) {
+exports.deleteTask = function(id, uid) {
   return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM tasks WHERE id = ?';
-      db.run(sql, [id], (err) => {
+      const sql = 'DELETE FROM tasks WHERE id = ? and user = ?';
+      db.run(sql, [id, uid], (err) => {
           if(err)
               reject(err);
           else 
