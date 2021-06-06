@@ -210,7 +210,7 @@ app.get('/api/sessions/current', (req, res) => {
         res.status(200).json(req.user);
     }
     else
-        res.status(401).json({ error: 'Unauthenticated user!' });;
+        res.status(401).json({ error: 'Unauthenticated user!' });
 });
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));

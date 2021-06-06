@@ -31,6 +31,7 @@ Provide a short description for API with the required parameters, follow the pro
 * Description: retrieve the list of all the user's tasks, or the filtered ones
 * Sample request:
     ```
+    GET http://localhost:3001/api/tasks/all
     GET http://localhost:3001/api/tasks/all/important
     ```
 * Request body: `EMPTY`
@@ -46,7 +47,6 @@ Provide a short description for API with the required parameters, follow the pro
     ```
     HTTP/1.1 404 Not Found
     ```
-
 
 ### Add task
 * URL: `/api/tasks`
@@ -76,6 +76,26 @@ Provide a short description for API with the required parameters, follow the pro
     HTTP/1.1 500 Internal Server Error
     ```
 
+### Mark task
+* URL: `/api/tasks/mark/<taskId>`
+* HTTP Method: `PUT`
+* Description: toggle `completed` field of a user's task given its `ID`
+* Sample request:
+    ```
+    PUT http://localhost:3001/api/tasks/mark/1
+    Content-type: application/json
+    ```
+* Request body: `EMPTY`
+* Response: 
+    ```
+    HTTP/1.1 200 OK
+    ```
+* Response body: `EMPTY`
+* Error responses:
+    ```
+    HTTP/1.1 500 Internal Server Error
+    ```
+
 ### Delete task
 * URL: `/api/tasks/<taskID>`
 * HTTP Method: `DELETE`
@@ -92,7 +112,7 @@ Provide a short description for API with the required parameters, follow the pro
     ```
 * Error responses:
     ```
-    HTTP/1.1 204 No Content
+    HTTP/1.1 500 Internal Server Error
     ```
 
 ### Update task
@@ -114,9 +134,13 @@ Provide a short description for API with the required parameters, follow the pro
     ```
     HTTP/1.1 200 OK
     ```
+* Error responses:
+    ```
+    HTTP/1.1 500 Internal Server Error
+    ```
 
 
-### Uer login
+### User login
 * URL: `/api/sessions/`
 * HTTP Method: `POST`
 * Description: user `login` through its `email`, `password`, and `id` 
@@ -126,7 +150,6 @@ Provide a short description for API with the required parameters, follow the pro
     Content-type: application/json
 
     { "username" : "john.doe@polito.it", "password" : "passwordJD", "id":1}
-
     ```
 * Request body:
     ```
@@ -163,6 +186,28 @@ Provide a short description for API with the required parameters, follow the pro
 * Error responses:
     ```
     HTTP/1.1 404 Not Found
+    ```
+
+### Get User session
+* URL: `/api/sessions/current`
+* HTTP Method: `GET`
+* Description: retrives (eventual) user's prevously opened session
+* Sample request:
+    ```
+    GET http://localhost:3001/api/sessions/current
+    ```
+* Request body: `EMPTY`
+* Response: 
+    ```
+    HTTP/1.1 200 OK
+    ```
+* Response body:
+    ```
+    { username, name, id, hash }
+    ```
+* Error responses:
+    ```
+    HTTP/1.1 401 Unauthorized
     ```
 
 ## Users inside `tasks.db`
