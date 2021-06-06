@@ -221,4 +221,6 @@ Provide a short description for API with the required parameters, follow the pro
 * Password: `passwordMY`
 
 ### PS:
-To perform a `logout` click on the user's icon on the sidebar.
+* To perform a `logout` click on the user's icon on the sidebar.
+
+* To search a specific task through the "magnifier" icon, you have to click after typing the text. Warning: it's case sensitive.

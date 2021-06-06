@@ -1,9 +1,10 @@
 import { Nav, Navbar, Form, FormControl, Image, Row, Col} from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 
 function NavBarMobile(props) {
     const location = useLocation();
-
+    const [searchText, setSearch] = useState('');
     return (
         <>
             <Navbar bg='primary' expand='lg' fixed='top'>
@@ -31,7 +32,7 @@ function NavBarMobile(props) {
                                     </Row>
                                 </Link>);
                         })}
-                        <Search selectFilter={props.selectFilter} ilters={props.filters}/>
+                        <Search selectFilter={props.selectFilter} ilters={props.filters} searchText={searchText} setSearch={setSearch}/>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
@@ -40,7 +41,7 @@ function NavBarMobile(props) {
 
 function Search (props) {
     return (
-        <Nav.Link id='filter-search' className='pl-3 btn-primary text-light' style={{ fontSize: '1.5em' }} title='Search'>
+        <Nav.Link id='filter-search' className='pl-3 btn-primary text-light' style={{ fontSize: '1.5em' }} onClick={()=>{const text=props.searchText; props.setSearch(''); props.selectFilter(text)}} title='Search'>
             <Row>
                 <Col xs={1}><i className='bi bi-search'></i></Col>
                 <Col>
@@ -50,7 +51,7 @@ function Search (props) {
                             placeholder='Type to filter...' 
                             className='w-100' 
                             onChange={(e) => {
-                                if(e.target.value.length <= 15) props.selectFilter(e.target.value);
+                                props.setSearch(e.target.value);
                             }}/>
                     </Form>
                 </Col>
