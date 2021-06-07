@@ -2,7 +2,7 @@
 const express = require('express');
 const TaskDao = require('./task_dao');
 const morgan = require('morgan');
-
+const path = require('path');
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");  // initializated down in the file with other middlewares
@@ -38,7 +38,7 @@ passport.deserializeUser((id, done) => {
         });
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 let app = new express();
 
 app.use(morgan('tiny'));
@@ -51,7 +51,7 @@ const isLoggedIn = (req, res, next) => {
 
     return res.status(401).json({ error: 'not authenticated' });
 }
-
+app.use(express.static("./client/build"));
 // set up the session
 app.use(session({
     // by default, Passport uses a MemoryStore to keep track of the sessions
@@ -212,5 +212,7 @@ app.get('/api/sessions/current', (req, res) => {
     else
         res.status(401).json({ error: 'Unauthenticated user!' });
 });
-
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+})
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
