@@ -213,6 +213,6 @@ app.get('/api/sessions/current', (req, res) => {
         res.status(401).json({ error: 'Unauthenticated user!' });
 });
 app.get('*',(req,res)=>{
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, './client/build', 'index.html'));
 })
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
